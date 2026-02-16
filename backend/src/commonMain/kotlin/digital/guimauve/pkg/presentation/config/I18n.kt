@@ -1,4 +1,4 @@
-package digital.guimauve.pkg.plugins
+package digital.guimauve.pkg.presentation.config
 
 import dev.kaccelero.plugins.I18n
 import io.ktor.server.application.*

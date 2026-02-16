@@ -1,4 +1,4 @@
-package digital.guimauve.pkg.plugins
+package digital.guimauve.pkg.presentation.config
 
 import dev.kaccelero.commons.sessions.ISessionsRepository
 import digital.guimauve.pkg.models.auth.SessionPayload

@@ -1,4 +1,4 @@
-package digital.guimauve.pkg.plugins
+package digital.guimauve.pkg.infrastructure.config
 
 import digital.guimauve.pkg.services.tokens.IJWTService
 import digital.guimauve.pkg.services.tokens.ITokensService
