@@ -2,18 +2,18 @@ package digital.guimauve.pkg.infrastructure.database.repositories
 
 import dev.kaccelero.database.IDatabase
 import dev.kaccelero.models.IContext
-import dev.kaccelero.models.UUID
-import digital.guimauve.pkg.domain.repositories.IOrganizationsRepository
+import digital.guimauve.pkg.domain.repositories.OrganizationsRepository
 import digital.guimauve.pkg.infrastructure.database.tables.Organizations
 import digital.guimauve.pkg.models.organizations.CreateOrganizationPayload
 import digital.guimauve.pkg.models.organizations.Organization
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import kotlin.uuid.Uuid
 
 class OrganizationDatabaseRepository(
     private val database: IDatabase,
-) : IOrganizationsRepository {
+) : OrganizationsRepository {
 
     init {
         database.transaction {
@@ -28,7 +28,7 @@ class OrganizationDatabaseRepository(
                 .map(Organizations::toOrganization)
         }
 
-    override suspend fun get(id: UUID, context: IContext?): Organization? =
+    override suspend fun get(id: Uuid, context: IContext?): Organization? =
         database.suspendedTransaction {
             Organizations
                 .selectAll()

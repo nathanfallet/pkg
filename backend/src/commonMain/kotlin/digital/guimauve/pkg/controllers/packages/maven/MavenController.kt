@@ -5,10 +5,9 @@ import dev.kaccelero.commons.repositories.ICreateChildModelWithContextSuspendUse
 import dev.kaccelero.commons.responses.BytesResponse
 import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.commons.users.IRequireUserForCallUseCase
-import dev.kaccelero.models.UUID
 import digital.guimauve.pkg.domain.usecases.packages.IGetOrCreatePackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.IGetPackageByNameUseCase
-import digital.guimauve.pkg.domain.usecases.packages.maven.IParseMavenPathUseCase
+import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.IGetLatestPackageVersionUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.IGetOrCreatePackageVersionUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.IGetPackageVersionByNameUseCase
@@ -25,11 +24,12 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.uuid.Uuid
 
 class MavenController(
     private val getUserUseCase: IGetUserForCallUseCase,
     private val requireUserUseCase: IRequireUserForCallUseCase,
-    private val parseMavenPathUseCase: IParseMavenPathUseCase,
+    private val parseMavenPathUseCase: ParseMavenPathUseCase,
     private val getPackageUseCase: IGetPackageByNameUseCase,
     private val getOrCreatePackageUseCase: IGetOrCreatePackageUseCase,
     private val getPackageVersionUseCase: IGetPackageVersionByNameUseCase,
@@ -37,7 +37,7 @@ class MavenController(
     private val getLatestVersionUseCase: IGetLatestPackageVersionUseCase,
     private val getPackageVersionFileByNameUseCase: IGetPackageVersionFileByNameUseCase,
     private val getLatestPackageVersionFileUseCase: IGetLatestPackageVersionFileUseCase,
-    private val createPackageVersionFileUseCase: ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, UUID>,
+    private val createPackageVersionFileUseCase: ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, Uuid>,
     private val downloadFileUseCase: IDownloadFileUseCase,
 ) : IMavenController {
 

@@ -4,18 +4,18 @@ import dev.kaccelero.database.IDatabase
 import dev.kaccelero.database.eq
 import dev.kaccelero.database.set
 import dev.kaccelero.models.IContext
-import dev.kaccelero.models.UUID
-import digital.guimauve.pkg.domain.repositories.IPackageVersionsRepository
+import digital.guimauve.pkg.domain.repositories.PackageVersionsRepository
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersions
 import digital.guimauve.pkg.models.packages.versions.CreatePackageVersionPayload
 import digital.guimauve.pkg.models.packages.versions.PackageVersion
 import digital.guimauve.pkg.models.users.UserContext
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.*
+import kotlin.uuid.Uuid
 
 class PackageVersionsDatabaseRepository(
     private val database: IDatabase,
-) : IPackageVersionsRepository {
+) : PackageVersionsRepository {
 
     init {
         database.transaction {
@@ -23,7 +23,7 @@ class PackageVersionsDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: UUID, context: IContext?): List<PackageVersion> =
+    override suspend fun list(parentId: Uuid, context: IContext?): List<PackageVersion> =
         database.suspendedTransaction {
             PackageVersions
                 .selectAll()
@@ -32,7 +32,7 @@ class PackageVersionsDatabaseRepository(
                 .map(PackageVersions::toPackageVersion)
         }
 
-    override suspend fun getByName(name: String, packageId: UUID): PackageVersion? =
+    override suspend fun getByName(name: String, packageId: Uuid): PackageVersion? =
         database.suspendedTransaction {
             PackageVersions
                 .selectAll()
@@ -41,7 +41,7 @@ class PackageVersionsDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun getLatest(packageId: UUID): PackageVersion? =
+    override suspend fun getLatest(packageId: Uuid): PackageVersion? =
         database.suspendedTransaction {
             PackageVersions
                 .selectAll()
@@ -54,7 +54,7 @@ class PackageVersionsDatabaseRepository(
 
     override suspend fun create(
         payload: CreatePackageVersionPayload,
-        parentId: UUID,
+        parentId: Uuid,
         context: IContext?,
     ): PackageVersion? {
         val userContext = context as? UserContext ?: return null

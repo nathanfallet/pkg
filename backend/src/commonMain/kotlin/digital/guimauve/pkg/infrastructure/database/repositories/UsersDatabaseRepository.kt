@@ -4,8 +4,7 @@ import dev.kaccelero.database.IDatabase
 import dev.kaccelero.database.eq
 import dev.kaccelero.database.set
 import dev.kaccelero.models.IContext
-import dev.kaccelero.models.UUID
-import digital.guimauve.pkg.domain.repositories.IUsersRepository
+import digital.guimauve.pkg.domain.repositories.UsersRepository
 import digital.guimauve.pkg.infrastructure.database.tables.Users
 import digital.guimauve.pkg.models.users.CreateUserPayload
 import digital.guimauve.pkg.models.users.User
@@ -13,10 +12,11 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import kotlin.uuid.Uuid
 
 class UsersDatabaseRepository(
     private val database: IDatabase,
-) : IUsersRepository {
+) : UsersRepository {
 
     init {
         database.transaction {
@@ -24,7 +24,7 @@ class UsersDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: UUID, context: IContext?): List<User> =
+    override suspend fun list(parentId: Uuid, context: IContext?): List<User> =
         database.suspendedTransaction {
             Users
                 .selectAll()
@@ -32,7 +32,7 @@ class UsersDatabaseRepository(
                 .map(Users::toUser)
         }
 
-    override suspend fun get(id: UUID): User? =
+    override suspend fun get(id: Uuid): User? =
         database.suspendedTransaction {
             Users
                 .selectAll()
@@ -41,7 +41,7 @@ class UsersDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun get(id: UUID, parentId: UUID, context: IContext?): User? =
+    override suspend fun get(id: Uuid, parentId: Uuid, context: IContext?): User? =
         database.suspendedTransaction {
             Users
                 .selectAll()
@@ -59,7 +59,7 @@ class UsersDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreateUserPayload, parentId: UUID, context: IContext?): User? =
+    override suspend fun create(payload: CreateUserPayload, parentId: Uuid, context: IContext?): User? =
         database.suspendedTransaction {
             Users.insert {
                 it[organizationId] = parentId

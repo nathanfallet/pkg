@@ -2,7 +2,6 @@ package digital.guimauve.pkg.controllers.packages
 
 import dev.kaccelero.commons.localization.IGetLocaleForCallUseCase
 import dev.kaccelero.commons.users.IGetUserForCallUseCase
-import dev.kaccelero.models.UUID
 import dev.kaccelero.routers.APIChildModelRouter
 import dev.kaccelero.routers.ConcatChildModelRouter
 import digital.guimauve.pkg.controllers.models.PublicChildModelRouter
@@ -13,6 +12,7 @@ import digital.guimauve.pkg.models.packages.CreatePackagePayload
 import digital.guimauve.pkg.models.packages.Package
 import digital.guimauve.pkg.models.packages.UpdatePackagePayload
 import io.ktor.util.reflect.*
+import kotlin.uuid.Uuid
 
 class PackagesRouter(
     controller: IPackagesController,
@@ -20,7 +20,7 @@ class PackagesRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     organizationForCallRouter: IOrganizationForCallRouter,
     organizationsRouter: OrganizationsRouter,
-) : ConcatChildModelRouter<Package, UUID, CreatePackagePayload, UpdatePackagePayload, Organization, UUID>(
+) : ConcatChildModelRouter<Package, Uuid, CreatePackagePayload, UpdatePackagePayload, Organization, Uuid>(
     APIChildModelRouter(
         typeInfo<Package>(),
         typeInfo<CreatePackagePayload>(),

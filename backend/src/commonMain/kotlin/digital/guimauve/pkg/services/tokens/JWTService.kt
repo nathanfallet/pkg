@@ -5,12 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
-import dev.kaccelero.models.UUID
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import java.util.*
+import kotlin.uuid.Uuid
 
 class JWTService(
     private val secret: String,
@@ -35,7 +35,7 @@ class JWTService(
         call.respond(mapOf("error" to "auth_invalid_token"))
     }
 
-    override fun generateJWT(userId: UUID, type: String): String {
+    override fun generateJWT(userId: Uuid, type: String): String {
         val effectiveExpiration = when (type) {
             "refresh" -> refreshExpiration
             else -> expiration

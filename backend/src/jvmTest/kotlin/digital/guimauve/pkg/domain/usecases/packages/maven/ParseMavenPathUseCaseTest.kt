@@ -1,7 +1,6 @@
-package digital.guimauve.pkg.usecases.packages.maven
+package digital.guimauve.pkg.domain.usecases.packages.maven
 
 import dev.kaccelero.commons.exceptions.ControllerException
-import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
 import digital.guimauve.pkg.models.packages.maven.MavenPath
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -11,7 +10,7 @@ class ParseMavenPathUseCaseTest {
 
     @Test
     fun testSmallWithoutVersion() {
-        val usecase = ParseMavenPathUseCase()
+        val usecase = ParseMavenPathUseCaseImpl()
         assertEquals(
             MavenPath(
                 groupId = "digital.guimauve",
@@ -25,7 +24,7 @@ class ParseMavenPathUseCaseTest {
 
     @Test
     fun testLargeWithoutVersion() {
-        val usecase = ParseMavenPathUseCase()
+        val usecase = ParseMavenPathUseCaseImpl()
         assertEquals(
             MavenPath(
                 groupId = "digital.guimauve.very.long.group",
@@ -39,7 +38,7 @@ class ParseMavenPathUseCaseTest {
 
     @Test
     fun testSmallWithVersion() {
-        val usecase = ParseMavenPathUseCase()
+        val usecase = ParseMavenPathUseCaseImpl()
         assertEquals(
             MavenPath(
                 groupId = "digital.guimauve",
@@ -53,7 +52,7 @@ class ParseMavenPathUseCaseTest {
 
     @Test
     fun testLargeWithVersion() {
-        val usecase = ParseMavenPathUseCase()
+        val usecase = ParseMavenPathUseCaseImpl()
         assertEquals(
             MavenPath(
                 groupId = "digital.guimauve.very.long.group",
@@ -67,7 +66,7 @@ class ParseMavenPathUseCaseTest {
 
     @Test
     fun testInvalid() {
-        val usecase = ParseMavenPathUseCase()
+        val usecase = ParseMavenPathUseCaseImpl()
         assertFailsWith(ControllerException::class) {
             usecase.invoke(listOf("digital"))
         }

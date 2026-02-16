@@ -4,18 +4,18 @@ import dev.kaccelero.database.IDatabase
 import dev.kaccelero.database.eq
 import dev.kaccelero.database.set
 import dev.kaccelero.models.IContext
-import dev.kaccelero.models.UUID
-import digital.guimauve.pkg.domain.repositories.IPackageVersionFilesRepository
+import digital.guimauve.pkg.domain.repositories.PackageVersionFilesRepository
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersionFiles
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersions
 import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
 import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.services.storage.FileContext
 import org.jetbrains.exposed.sql.*
+import kotlin.uuid.Uuid
 
 class PackageVersionFilesDatabaseRepository(
     private val database: IDatabase,
-) : IPackageVersionFilesRepository {
+) : PackageVersionFilesRepository {
 
     init {
         database.transaction {
@@ -23,7 +23,7 @@ class PackageVersionFilesDatabaseRepository(
         }
     }
 
-    override suspend fun getByName(name: String, parentId: UUID): PackageVersionFile? =
+    override suspend fun getByName(name: String, parentId: Uuid): PackageVersionFile? =
         database.suspendedTransaction {
             PackageVersionFiles
                 .selectAll()
@@ -32,7 +32,7 @@ class PackageVersionFilesDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun getLatestByName(name: String, packageId: UUID): PackageVersionFile? =
+    override suspend fun getLatestByName(name: String, packageId: Uuid): PackageVersionFile? =
         database.suspendedTransaction {
             PackageVersionFiles
                 .join(PackageVersions, JoinType.INNER, PackageVersionFiles.versionId, PackageVersions.id)
@@ -46,7 +46,7 @@ class PackageVersionFilesDatabaseRepository(
 
     override suspend fun create(
         payload: CreatePackageVersionFilePayload,
-        parentId: UUID,
+        parentId: Uuid,
         context: IContext?,
     ): PackageVersionFile? {
         val fileContext = context as? FileContext ?: return null

@@ -12,7 +12,6 @@ import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.commons.users.IRequireUserForCallUseCase
 import dev.kaccelero.commons.users.RequireUserForCallUseCase
 import dev.kaccelero.database.IDatabase
-import dev.kaccelero.models.UUID
 import digital.guimauve.pkg.controllers.auth.AuthController
 import digital.guimauve.pkg.controllers.auth.AuthRouter
 import digital.guimauve.pkg.controllers.auth.IAuthController
@@ -43,8 +42,8 @@ import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.IGetOrCreatePackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.IGetPackageByNameUseCase
-import digital.guimauve.pkg.domain.usecases.packages.maven.IParseMavenPathUseCase
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
+import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.packages.versions.*
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.*
 import digital.guimauve.pkg.domain.usecases.users.*
@@ -68,6 +67,7 @@ import io.ktor.server.application.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
+import kotlin.uuid.Uuid
 
 fun Application.configureKoin() {
     install(Koin) {
@@ -99,11 +99,11 @@ fun Application.configureKoin() {
         }
         val repositoryModule = module {
             single<ISessionsRepository> { SessionsDatabaseRepository(get()) }
-            single<IOrganizationsRepository> { OrganizationDatabaseRepository(get()) }
-            single<IUsersRepository> { UsersDatabaseRepository(get()) }
-            single<IPackagesRepository> { PackagesDatabaseRepository(get()) }
-            single<IPackageVersionsRepository> { PackageVersionsDatabaseRepository(get()) }
-            single<IPackageVersionFilesRepository> { PackageVersionFilesDatabaseRepository(get()) }
+            single<OrganizationsRepository> { OrganizationDatabaseRepository(get()) }
+            single<UsersRepository> { UsersDatabaseRepository(get()) }
+            single<PackagesRepository> { PackagesDatabaseRepository(get()) }
+            single<PackageVersionsRepository> { PackageVersionsDatabaseRepository(get()) }
+            single<PackageVersionFilesRepository> { PackageVersionFilesDatabaseRepository(get()) }
         }
         val useCaseModule = module {
             // Application
@@ -118,34 +118,34 @@ fun Application.configureKoin() {
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
             single<IClearSessionForCallUseCase> { ClearSessionForCallUseCase() }
-            single<ILoginUseCase> { LoginUseCase(get(), get()) }
+            single<LoginUseCase> { LoginUseCaseImpl(get(), get()) }
 
             // Organizations
             single<IRequireOrganizationForCallUseCase> { RequireOrganizationForCallUseCase(get(), get()) }
             single<IListModelSuspendUseCase<Organization>>(named<Organization>()) {
-                ListModelFromRepositorySuspendUseCase(get<IOrganizationsRepository>())
+                ListModelFromRepositorySuspendUseCase(get<OrganizationsRepository>())
             }
-            single<IGetModelSuspendUseCase<Organization, UUID>>(named<Organization>()) {
-                GetModelFromRepositorySuspendUseCase(get<IOrganizationsRepository>())
+            single<IGetModelSuspendUseCase<Organization, Uuid>>(named<Organization>()) {
+                GetModelFromRepositorySuspendUseCase(get<OrganizationsRepository>())
             }
             single<ICreateModelSuspendUseCase<Organization, CreateOrganizationPayload>>(named<Organization>()) {
-                CreateModelFromRepositorySuspendUseCase(get<IOrganizationsRepository>())
+                CreateModelFromRepositorySuspendUseCase(get<OrganizationsRepository>())
             }
 
             // Users
-            single<IListChildModelSuspendUseCase<User, UUID>>(named<User>()) {
-                ListChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
+            single<IListChildModelSuspendUseCase<User, Uuid>>(named<User>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<UsersRepository>())
             }
-            single<IGetChildModelSuspendUseCase<User, UUID, UUID>>(named<User>()) {
-                GetChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
+            single<IGetChildModelSuspendUseCase<User, Uuid, Uuid>>(named<User>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<UsersRepository>())
             }
-            single<ICreateChildModelSuspendUseCase<User, CreateUserPayload, UUID>>(named<User>()) {
+            single<ICreateChildModelSuspendUseCase<User, CreateUserPayload, Uuid>>(named<User>()) {
                 CreateUserUseCase(get(), get())
             }
-            single<IGetUserUseCase> { GetUserUseCase(get()) }
-            single<IGetUserForEmailUseCase> { GetUserForEmailUseCase(get()) }
+            single<GetUserUseCase> { GetUserUseCaseImpl(get()) }
+            single<GetUserForEmailUseCase> { GetUserForEmailUseCaseImpl(get()) }
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(), get(), get()) }
-            single<IGetUserForRefreshTokenUseCase> { GetUserForRefreshTokenUseCase(get(), get()) }
+            single<GetUserForRefreshTokenUseCase> { GetUserForRefreshTokenUseCaseImpl(get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
 
             // Packages
@@ -156,30 +156,30 @@ fun Application.configureKoin() {
             single<IGetLatestPackageVersionUseCase> { GetLatestPackageVersionUseCase(get()) }
             single<IGetPackageVersionFileByNameUseCase> { GetPackageVersionFileByNameUseCase(get()) }
             single<IGetLatestPackageVersionFileUseCase> { GetLatestPackageVersionFileUseCase(get()) }
-            single<ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, UUID>>(
+            single<ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, Uuid>>(
                 named<PackageVersionFile>()
             ) {
                 CreatePackageVersionFileUseCase(get(), get())
             }
-            single<IListChildModelSuspendUseCase<Package, UUID>>(named<Package>()) {
-                ListChildModelFromRepositorySuspendUseCase(get<IPackagesRepository>())
+            single<IListChildModelSuspendUseCase<Package, Uuid>>(named<Package>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<PackagesRepository>())
             }
-            single<IGetChildModelSuspendUseCase<Package, UUID, UUID>>(named<Package>()) {
-                GetChildModelFromRepositorySuspendUseCase(get<IPackagesRepository>())
+            single<IGetChildModelSuspendUseCase<Package, Uuid, Uuid>>(named<Package>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<PackagesRepository>())
             }
-            single<IListChildModelSuspendUseCase<PackageVersion, UUID>>(named<PackageVersion>()) {
-                ListChildModelFromRepositorySuspendUseCase(get<IPackageVersionsRepository>())
+            single<IListChildModelSuspendUseCase<PackageVersion, Uuid>>(named<PackageVersion>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<PackageVersionsRepository>())
             }
-            single<IGetChildModelSuspendUseCase<PackageVersion, UUID, UUID>>(named<PackageVersion>()) {
-                GetChildModelFromRepositorySuspendUseCase(get<IPackageVersionsRepository>())
+            single<IGetChildModelSuspendUseCase<PackageVersion, Uuid, Uuid>>(named<PackageVersion>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<PackageVersionsRepository>())
             }
-            single<IListChildModelSuspendUseCase<PackageVersionFile, UUID>>(named<PackageVersionFile>()) {
-                ListChildModelFromRepositorySuspendUseCase(get<IPackageVersionFilesRepository>())
+            single<IListChildModelSuspendUseCase<PackageVersionFile, Uuid>>(named<PackageVersionFile>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<PackageVersionFilesRepository>())
             }
             single<IDownloadFileUseCase> { DownloadFileUseCase(get()) }
 
             // Maven
-            single<IParseMavenPathUseCase> { ParseMavenPathUseCase() }
+            single<ParseMavenPathUseCase> { ParseMavenPathUseCaseImpl() }
         }
         val controllerModule = module {
             single<IAuthController> { AuthController(get(), get(), get()) }

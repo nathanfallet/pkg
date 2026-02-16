@@ -2,7 +2,7 @@ package digital.guimauve.pkg.domain.usecases.organizations
 
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.users.IRequireUserForCallUseCase
-import digital.guimauve.pkg.domain.repositories.IOrganizationsRepository
+import digital.guimauve.pkg.domain.repositories.OrganizationsRepository
 import digital.guimauve.pkg.models.organizations.Organization
 import digital.guimauve.pkg.models.users.User
 import io.ktor.http.*
@@ -10,7 +10,7 @@ import io.ktor.server.application.*
 import io.ktor.util.*
 
 class RequireOrganizationForCallUseCase(
-    private val repository: IOrganizationsRepository,
+    private val repository: OrganizationsRepository,
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
 ) : IRequireOrganizationForCallUseCase {
 

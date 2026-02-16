@@ -8,7 +8,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ApplicationTest {
-
     @Test
     fun testStartup() = testApplication {
         environment {
@@ -18,7 +17,6 @@ class ApplicationTest {
             module()
         }
         val response = client.get("/api/v1/organizations")
-        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(HttpStatusCode.Companion.OK, response.status)
     }
-
 }

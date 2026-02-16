@@ -1,14 +1,14 @@
 package digital.guimauve.pkg.domain.usecases.packages.versions
 
-import dev.kaccelero.models.UUID
-import digital.guimauve.pkg.domain.repositories.IPackageVersionsRepository
+import digital.guimauve.pkg.domain.repositories.PackageVersionsRepository
 import digital.guimauve.pkg.models.packages.versions.PackageVersion
+import kotlin.uuid.Uuid
 
 class GetPackageVersionByNameUseCase(
-    private val repository: IPackageVersionsRepository,
+    private val repository: PackageVersionsRepository,
 ) : IGetPackageVersionByNameUseCase {
 
-    override suspend fun invoke(input1: String, input2: UUID): PackageVersion? =
+    override suspend fun invoke(input1: String, input2: Uuid): PackageVersion? =
         repository.getByName(input1, input2)
 
 }

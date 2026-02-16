@@ -1,25 +1,25 @@
 package digital.guimauve.pkg.models.packages
 
 import dev.kaccelero.models.IChildModel
-import dev.kaccelero.models.UUID
 import digital.guimauve.zodable.Zodable
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.uuid.Uuid
 
 @Zodable
 @JsExport
 @Serializable
 data class Package(
-    override val id: UUID,
+    override val id: Uuid,
     val name: String,
     val format: PackageFormat,
-    val organizationId: UUID,
+    val organizationId: Uuid,
     val isPublic: Boolean,
     val createdAt: Instant,
-) : IChildModel<UUID, CreatePackagePayload, UpdatePackagePayload, UUID> {
+) : IChildModel<Uuid, CreatePackagePayload, UpdatePackagePayload, Uuid> {
 
-    override val parentId: UUID
+    override val parentId: Uuid
         get() = organizationId
 
 }

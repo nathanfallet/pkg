@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.domain.usecases.packages
 
 import dev.kaccelero.commons.exceptions.ControllerException
-import digital.guimauve.pkg.domain.repositories.IPackagesRepository
+import digital.guimauve.pkg.domain.repositories.PackagesRepository
 import digital.guimauve.pkg.models.packages.CreatePackagePayload
 import digital.guimauve.pkg.models.packages.Package
 import digital.guimauve.pkg.models.packages.PackageFormat
@@ -9,7 +9,7 @@ import digital.guimauve.pkg.models.users.User
 import io.ktor.http.*
 
 class GetOrCreatePackageUseCase(
-    private val repository: IPackagesRepository,
+    private val repository: PackagesRepository,
 ) : IGetOrCreatePackageUseCase {
 
     override suspend fun invoke(input1: String, input2: PackageFormat, input3: User): Package? {

@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 includeBuild("gradle-plugin")
 include(":commons")
 include(":backend")
+include(":app")

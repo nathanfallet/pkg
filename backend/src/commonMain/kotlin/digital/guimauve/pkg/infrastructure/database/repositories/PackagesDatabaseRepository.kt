@@ -4,8 +4,7 @@ import dev.kaccelero.database.IDatabase
 import dev.kaccelero.database.eq
 import dev.kaccelero.database.set
 import dev.kaccelero.models.IContext
-import dev.kaccelero.models.UUID
-import digital.guimauve.pkg.domain.repositories.IPackagesRepository
+import digital.guimauve.pkg.domain.repositories.PackagesRepository
 import digital.guimauve.pkg.infrastructure.database.tables.Packages
 import digital.guimauve.pkg.models.packages.CreatePackagePayload
 import digital.guimauve.pkg.models.packages.Package
@@ -13,10 +12,11 @@ import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.UpdatePackagePayload
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.*
+import kotlin.uuid.Uuid
 
 class PackagesDatabaseRepository(
     private val database: IDatabase,
-) : IPackagesRepository {
+) : PackagesRepository {
 
     init {
         database.transaction {
@@ -24,7 +24,7 @@ class PackagesDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: UUID, context: IContext?): List<Package> =
+    override suspend fun list(parentId: Uuid, context: IContext?): List<Package> =
         database.suspendedTransaction {
             Packages
                 .selectAll()
@@ -32,7 +32,7 @@ class PackagesDatabaseRepository(
                 .map(Packages::toPackage)
         }
 
-    override suspend fun get(id: UUID, parentId: UUID, context: IContext?): Package? =
+    override suspend fun get(id: Uuid, parentId: Uuid, context: IContext?): Package? =
         database.suspendedTransaction {
             Packages
                 .selectAll()
@@ -50,7 +50,7 @@ class PackagesDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreatePackagePayload, parentId: UUID, context: IContext?): Package? =
+    override suspend fun create(payload: CreatePackagePayload, parentId: Uuid, context: IContext?): Package? =
         database.suspendedTransaction {
             Packages.insert {
                 it[name] = payload.name
@@ -61,14 +61,14 @@ class PackagesDatabaseRepository(
             }
         }.resultedValues?.map(Packages::toPackage)?.singleOrNull()
 
-    override suspend fun update(id: UUID, payload: UpdatePackagePayload, parentId: UUID, context: IContext?): Boolean =
+    override suspend fun update(id: Uuid, payload: UpdatePackagePayload, parentId: Uuid, context: IContext?): Boolean =
         database.suspendedTransaction {
             Packages.update({ Packages.id eq id and (Packages.organizationId eq parentId) }) {
                 it[isPublic] = payload.isPublic
             }
         } == 1
 
-    override suspend fun delete(id: UUID, parentId: UUID, context: IContext?): Boolean =
+    override suspend fun delete(id: Uuid, parentId: Uuid, context: IContext?): Boolean =
         database.suspendedTransaction {
             Packages.deleteWhere { Packages.id eq id and (Packages.organizationId eq parentId) }
         } == 1

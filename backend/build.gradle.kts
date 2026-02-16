@@ -4,27 +4,6 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.ksp)
     alias(libs.plugins.maven)
-    alias(libs.plugins.ktor)
-}
-
-application {
-    mainClass.set("digital.guimauve.pkg.ApplicationKt")
-}
-
-ktor {
-    docker {
-        jreVersion.set(JavaVersion.VERSION_21)
-        localImageName.set("pkg")
-        findProperty("imageTag")?.let { imageTag.set(it.toString()) }
-
-        externalRegistry.set(
-            io.ktor.plugin.features.DockerImageRegistry.dockerHub(
-                appName = provider { "pkg" },
-                username = provider { "guimauvedigital" },
-                password = providers.environmentVariable("DOCKER_HUB_PASSWORD")
-            )
-        )
-    }
 }
 
 mavenPublishing {
@@ -57,7 +36,6 @@ mavenPublishing {
 kotlin {
     jvmToolchain(21)
     jvm {
-        withJava()
         testRuns.named("test") {
             executionTask.configure {
                 useJUnitPlatform()
@@ -67,6 +45,11 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
     sourceSets {
+        all {
+            languageSettings.apply {
+                optIn("kotlin.uuid.ExperimentalUuidApi")
+            }
+        }
         val commonMain by getting {
             dependencies {
                 api(project(":commons"))
@@ -85,8 +68,8 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.bundles.ktor.server.tests)
+                implementation(libs.h2)
                 implementation(libs.tests.mockk)
-                implementation(libs.tests.h2)
                 implementation(libs.tests.coroutines)
             }
         }

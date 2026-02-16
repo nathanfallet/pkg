@@ -2,7 +2,6 @@ package digital.guimauve.pkg.controllers.users
 
 import dev.kaccelero.commons.localization.IGetLocaleForCallUseCase
 import dev.kaccelero.commons.users.IGetUserForCallUseCase
-import dev.kaccelero.models.UUID
 import dev.kaccelero.routers.APIChildModelRouter
 import dev.kaccelero.routers.ConcatChildModelRouter
 import digital.guimauve.pkg.controllers.models.PublicChildModelRouter
@@ -12,6 +11,7 @@ import digital.guimauve.pkg.models.organizations.Organization
 import digital.guimauve.pkg.models.users.CreateUserPayload
 import digital.guimauve.pkg.models.users.User
 import io.ktor.util.reflect.*
+import kotlin.uuid.Uuid
 
 class UsersRouter(
     controller: IUsersController,
@@ -19,7 +19,7 @@ class UsersRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     organizationForCallRouter: IOrganizationForCallRouter,
     organizationsRouter: OrganizationsRouter,
-) : ConcatChildModelRouter<User, UUID, CreateUserPayload, Unit, Organization, UUID>(
+) : ConcatChildModelRouter<User, Uuid, CreateUserPayload, Unit, Organization, Uuid>(
     APIChildModelRouter(
         typeInfo<User>(),
         typeInfo<CreateUserPayload>(),

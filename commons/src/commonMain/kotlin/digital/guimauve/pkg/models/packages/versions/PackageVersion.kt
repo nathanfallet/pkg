@@ -1,26 +1,26 @@
 package digital.guimauve.pkg.models.packages.versions
 
 import dev.kaccelero.models.IChildModel
-import dev.kaccelero.models.UUID
 import digital.guimauve.zodable.Zodable
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.uuid.Uuid
 
 @Zodable
 @JsExport
 @Serializable
 data class PackageVersion(
-    override val id: UUID,
-    val packageId: UUID,
+    override val id: Uuid,
+    val packageId: Uuid,
     val version: String,
-    val publishedBy: UUID,
+    val publishedBy: Uuid,
     val publishedAt: Instant,
     val metadata: String?,
     val yanked: Boolean,
-) : IChildModel<UUID, CreatePackageVersionPayload, Unit, UUID> {
+) : IChildModel<Uuid, CreatePackageVersionPayload, Unit, Uuid> {
 
-    override val parentId: UUID
+    override val parentId: Uuid
         get() = packageId
 
 }

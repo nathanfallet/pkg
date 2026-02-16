@@ -2,9 +2,9 @@ package digital.guimauve.pkg.services.tokens
 
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
-import dev.kaccelero.models.UUID
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import kotlin.uuid.Uuid
 
 interface IJWTService {
 
@@ -12,7 +12,7 @@ interface IJWTService {
     val authenticationFunction: AuthenticationFunction<JWTCredential>
     val challenge: JWTAuthChallengeFunction
 
-    fun generateJWT(userId: UUID, type: String): String
+    fun generateJWT(userId: Uuid, type: String): String
     fun verifyJWT(token: String): DecodedJWT?
 
 }

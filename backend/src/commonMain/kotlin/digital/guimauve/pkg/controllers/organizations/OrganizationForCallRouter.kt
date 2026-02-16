@@ -1,6 +1,5 @@
 package digital.guimauve.pkg.controllers.organizations
 
-import dev.kaccelero.models.UUID
 import dev.kaccelero.routers.AbstractModelRouter
 import dev.kaccelero.routers.ControllerRoute
 import dev.kaccelero.routers.ICall
@@ -14,11 +13,12 @@ import io.ktor.util.reflect.*
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.parameters.Parameter
 import kotlin.reflect.KClass
+import kotlin.uuid.Uuid
 
 class OrganizationForCallRouter(
     private val requireOrganizationForCallUseCase: IRequireOrganizationForCallUseCase,
     controller: IOrganizationsController,
-) : AbstractModelRouter<Organization, UUID, CreateOrganizationPayload, Unit>(
+) : AbstractModelRouter<Organization, Uuid, CreateOrganizationPayload, Unit>(
     typeInfo<Organization>(),
     typeInfo<CreateOrganizationPayload>(),
     typeInfo<Unit>(),

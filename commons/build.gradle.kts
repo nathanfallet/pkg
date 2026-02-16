@@ -61,7 +61,6 @@ kotlin {
     // jvm & js
     jvmToolchain(21)
     jvm {
-        withJava()
         testRuns.named("test") {
             executionTask.configure {
                 useJUnitPlatform()
@@ -79,6 +78,7 @@ kotlin {
     sourceSets {
         all {
             languageSettings.apply {
+                optIn("kotlin.uuid.ExperimentalUuidApi")
                 optIn("kotlin.js.ExperimentalJsExport")
             }
         }

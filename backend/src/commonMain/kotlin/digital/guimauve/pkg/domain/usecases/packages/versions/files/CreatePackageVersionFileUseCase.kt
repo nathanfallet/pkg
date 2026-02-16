@@ -3,8 +3,7 @@ package digital.guimauve.pkg.domain.usecases.packages.versions.files
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.repositories.ICreateChildModelWithContextSuspendUseCase
 import dev.kaccelero.models.IContext
-import dev.kaccelero.models.UUID
-import digital.guimauve.pkg.domain.repositories.IPackageVersionFilesRepository
+import digital.guimauve.pkg.domain.repositories.PackageVersionFilesRepository
 import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
 import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.services.storage.FileContext
@@ -12,15 +11,16 @@ import digital.guimauve.pkg.services.storage.FileFromBytesContext
 import digital.guimauve.pkg.services.storage.FileFromUrlContext
 import digital.guimauve.pkg.services.storage.IStorageService
 import io.ktor.http.*
+import kotlin.uuid.Uuid
 
 class CreatePackageVersionFileUseCase(
-    private val repository: IPackageVersionFilesRepository,
+    private val repository: PackageVersionFilesRepository,
     private val storageService: IStorageService,
-) : ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, UUID> {
+) : ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, Uuid> {
 
     override suspend fun invoke(
         input1: CreatePackageVersionFilePayload,
-        input2: UUID,
+        input2: Uuid,
         input3: IContext,
     ): PackageVersionFile? {
         repository.getByName(input1.name, input2)?.let {

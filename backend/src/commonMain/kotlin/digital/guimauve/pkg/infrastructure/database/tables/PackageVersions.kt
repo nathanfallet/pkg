@@ -1,13 +1,12 @@
 package digital.guimauve.pkg.infrastructure.database.tables
 
-import dev.kaccelero.models.UUID
 import digital.guimauve.pkg.models.packages.versions.PackageVersion
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import kotlin.uuid.toKotlinUuid
 
 object PackageVersions : UUIDTable() {
-
     val packageId = uuid("package_id").index()
     val version = varchar("version", 255)
     val publishedBy = uuid("published_by")
@@ -22,13 +21,12 @@ object PackageVersions : UUIDTable() {
     fun toPackageVersion(
         row: ResultRow,
     ) = PackageVersion(
-        UUID(row[id].value),
-        UUID(row[packageId]),
+        row[id].value.toKotlinUuid(),
+        row[packageId].toKotlinUuid(),
         row[version],
-        UUID(row[publishedBy]),
+        row[publishedBy].toKotlinUuid(),
         row[publishedAt],
         row[metadata],
         row[yanked],
     )
-
 }
