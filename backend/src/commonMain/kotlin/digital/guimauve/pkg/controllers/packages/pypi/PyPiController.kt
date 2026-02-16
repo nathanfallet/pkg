@@ -3,11 +3,11 @@ package digital.guimauve.pkg.controllers.packages.pypi
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.commons.users.IRequireUserForCallUseCase
+import digital.guimauve.pkg.domain.usecases.packages.IGetOrCreatePackageUseCase
+import digital.guimauve.pkg.domain.usecases.packages.IGetPackageByNameUseCase
 import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.models.users.User
-import digital.guimauve.pkg.usecases.packages.IGetOrCreatePackageUseCase
-import digital.guimauve.pkg.usecases.packages.IGetPackageByNameUseCase
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*

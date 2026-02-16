@@ -5,9 +5,9 @@ import dev.kaccelero.routers.AbstractModelRouter
 import dev.kaccelero.routers.ControllerRoute
 import dev.kaccelero.routers.ICall
 import dev.kaccelero.routers.KtorCall
+import digital.guimauve.pkg.domain.usecases.organizations.IRequireOrganizationForCallUseCase
 import digital.guimauve.pkg.models.organizations.CreateOrganizationPayload
 import digital.guimauve.pkg.models.organizations.Organization
-import digital.guimauve.pkg.usecases.organizations.IRequireOrganizationForCallUseCase
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*

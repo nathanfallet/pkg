@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.services.tokens
 
+import digital.guimauve.pkg.domain.usecases.auth.ILoginUseCase
 import digital.guimauve.pkg.models.auth.LoginPayload
-import digital.guimauve.pkg.usecases.auth.ILoginUseCase
 import io.ktor.server.auth.*
 
 class TokensService(

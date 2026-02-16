@@ -1,0 +1,115 @@
+[versions]
+kotlin = "2.1.10"
+kover = "0.8.3"
+ksp = "2.1.10-1.0.30"
+maven-publish = "0.30.0"
+zodable = "1.6.2-ksp1"
+kaccelero = "0.6.10"
+mockk = "1.13.12"
+h2 = "2.3.232"
+jsoup = "1.16.2"
+kotlinx-coroutines = "1.9.0"
+ktor = "3.1.3"
+koin = "4.1.0"
+logback = "0.9.30"
+mysql = "8.0.33"
+s3 = "2.31.4"
+
+[plugins]
+multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+maven = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+zodable = { id = "digital.guimauve.zodable", version.ref = "zodable" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+
+[libraries]
+# Kaccelero
+kaccelero-routers-client = { module = "dev.kaccelero:routers-client-ktor", version.ref = "kaccelero" }
+kaccelero-routers = { module = "dev.kaccelero:routers-ktor", version.ref = "kaccelero" }
+kaccelero-i18n-freemarker = { module = "dev.kaccelero:i18n-ktor-freemarker", version.ref = "kaccelero" }
+kaccelero-auth = { module = "dev.kaccelero:auth", version.ref = "kaccelero" }
+kaccelero-database-sessions = { module = "dev.kaccelero:database-ktor-sessions", version.ref = "kaccelero" }
+kaccelero-database-sentry = { module = "dev.kaccelero:database-exposed-sentry", version.ref = "kaccelero" }
+kaccelero-health-sentry = { module = "dev.kaccelero:health-sentry-ktor", version.ref = "kaccelero" }
+
+# Tests
+tests-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+tests-h2 = { module = "com.h2database:h2", version.ref = "h2" }
+tests-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+tests-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+
+# Ktor
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-server-auto-head-response = { module = "io.ktor:ktor-server-auto-head-response", version.ref = "ktor" }
+ktor-server-sessions = { module = "io.ktor:ktor-server-sessions", version.ref = "ktor" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
+ktor-server-freemarker = { module = "io.ktor:ktor-server-freemarker", version.ref = "ktor" }
+ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-apache = { module = "io.ktor:ktor-client-apache", version.ref = "ktor" }
+ktor-client-jetty = { module = "io.ktor:ktor-client-jetty", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+
+# Koin
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
+
+# Others
+logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
+s3 = { module = "software.amazon.awssdk:s3", version.ref = "s3" }
+
+[bundles]
+kaccelero-ktor = [
+    "kaccelero-routers-client",
+    "kaccelero-routers",
+    "kaccelero-i18n-freemarker",
+    "kaccelero-auth",
+    "kaccelero-database-sessions",
+    "kaccelero-database-sentry",
+    "kaccelero-health-sentry",
+]
+
+ktor-server-api = [
+    "ktor-server-core",
+    "ktor-server-netty",
+    "ktor-server-call-logging",
+    "ktor-server-status-pages",
+    "ktor-server-content-negotiation",
+    "ktor-server-auto-head-response",
+    "ktor-server-sessions",
+    "ktor-server-auth-jwt",
+    "ktor-server-freemarker",
+    "ktor-server-websockets",
+    "ktor-server-cors",
+    "ktor-serialization-kotlinx-json",
+]
+
+ktor-server-tests = [
+    "ktor-server-test-host",
+    "ktor-client-core",
+    "ktor-client-content-negotiation",
+]
+
+ktor-client-api = [
+    "ktor-client-core",
+    "ktor-client-apache",
+    "ktor-client-jetty",
+    "ktor-client-content-negotiation",
+    "ktor-serialization-kotlinx-json",
+]
+
+ktor-client-tests = [
+    "ktor-client-mock",
+]

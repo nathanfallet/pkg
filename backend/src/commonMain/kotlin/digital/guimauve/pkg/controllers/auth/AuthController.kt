@@ -2,11 +2,11 @@ package digital.guimauve.pkg.controllers.auth
 
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.responses.RedirectResponse
+import digital.guimauve.pkg.domain.usecases.auth.IClearSessionForCallUseCase
+import digital.guimauve.pkg.domain.usecases.auth.ILoginUseCase
+import digital.guimauve.pkg.domain.usecases.auth.ISetSessionForCallUseCase
 import digital.guimauve.pkg.models.auth.LoginPayload
 import digital.guimauve.pkg.models.auth.SessionPayload
-import digital.guimauve.pkg.usecases.auth.IClearSessionForCallUseCase
-import digital.guimauve.pkg.usecases.auth.ILoginUseCase
-import digital.guimauve.pkg.usecases.auth.ISetSessionForCallUseCase
 import io.ktor.http.*
 import io.ktor.server.application.*
 

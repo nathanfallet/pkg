@@ -3,13 +3,13 @@ package digital.guimauve.pkg.controllers.packages.npm
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.commons.users.IRequireUserForCallUseCase
+import digital.guimauve.pkg.domain.usecases.packages.IGetOrCreatePackageUseCase
+import digital.guimauve.pkg.domain.usecases.packages.IGetPackageByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.IGetPackageVersionByNameUseCase
 import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.npm.NpmPackage
 import digital.guimauve.pkg.models.packages.npm.NpmVersion
 import digital.guimauve.pkg.models.users.User
-import digital.guimauve.pkg.usecases.packages.IGetOrCreatePackageUseCase
-import digital.guimauve.pkg.usecases.packages.IGetPackageByNameUseCase
-import digital.guimauve.pkg.usecases.packages.versions.IGetPackageVersionByNameUseCase
 import io.ktor.http.*
 import io.ktor.server.application.*
 

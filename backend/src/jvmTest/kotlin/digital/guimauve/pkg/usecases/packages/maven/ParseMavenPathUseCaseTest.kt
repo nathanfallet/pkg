@@ -1,6 +1,7 @@
 package digital.guimauve.pkg.usecases.packages.maven
 
 import dev.kaccelero.commons.exceptions.ControllerException
+import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
 import digital.guimauve.pkg.models.packages.maven.MavenPath
 import kotlin.test.Test
 import kotlin.test.assertEquals
