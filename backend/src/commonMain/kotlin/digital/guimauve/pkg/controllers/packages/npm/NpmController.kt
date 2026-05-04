@@ -3,9 +3,9 @@ package digital.guimauve.pkg.controllers.packages.npm
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.commons.users.IRequireUserForCallUseCase
-import digital.guimauve.pkg.domain.usecases.packages.IGetOrCreatePackageUseCase
-import digital.guimauve.pkg.domain.usecases.packages.IGetPackageByNameUseCase
-import digital.guimauve.pkg.domain.usecases.packages.versions.IGetPackageVersionByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
+import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.GetPackageVersionByNameUseCase
 import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.npm.NpmPackage
 import digital.guimauve.pkg.models.packages.npm.NpmVersion
@@ -16,9 +16,9 @@ import io.ktor.server.application.*
 class NpmController(
     private val getUserUseCase: IGetUserForCallUseCase,
     private val requireUserUseCase: IRequireUserForCallUseCase,
-    private val getPackageUseCase: IGetPackageByNameUseCase,
-    private val getOrCreatePackageUseCase: IGetOrCreatePackageUseCase,
-    private val getPackageVersionUseCase: IGetPackageVersionByNameUseCase,
+    private val getPackageUseCase: GetPackageByNameUseCase,
+    private val getOrCreatePackageUseCase: GetOrCreatePackageUseCase,
+    private val getPackageVersionUseCase: GetPackageVersionByNameUseCase,
 ) : INpmController {
 
     override suspend fun login(call: ApplicationCall): Map<String, String> {

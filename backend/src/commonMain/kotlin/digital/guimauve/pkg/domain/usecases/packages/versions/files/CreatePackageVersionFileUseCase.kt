@@ -17,7 +17,6 @@ class CreatePackageVersionFileUseCase(
     private val repository: PackageVersionFilesRepository,
     private val storageService: IStorageService,
 ) : ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, Uuid> {
-
     override suspend fun invoke(
         input1: CreatePackageVersionFilePayload,
         input2: Uuid,
@@ -44,5 +43,4 @@ class CreatePackageVersionFileUseCase(
         storageService.uploadStream(fileContext, input1.path)
         return repository.create(input1, input2, fileContext)
     }
-
 }

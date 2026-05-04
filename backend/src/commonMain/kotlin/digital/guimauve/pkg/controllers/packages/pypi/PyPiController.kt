@@ -3,8 +3,8 @@ package digital.guimauve.pkg.controllers.packages.pypi
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.commons.users.IRequireUserForCallUseCase
-import digital.guimauve.pkg.domain.usecases.packages.IGetOrCreatePackageUseCase
-import digital.guimauve.pkg.domain.usecases.packages.IGetPackageByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
+import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
 import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.models.users.User
@@ -16,8 +16,8 @@ import io.ktor.server.request.*
 class PyPiController(
     private val getUserUseCase: IGetUserForCallUseCase,
     private val requireUserUseCase: IRequireUserForCallUseCase,
-    private val getPackageUseCase: IGetPackageByNameUseCase,
-    private val getOrCreatePackageUseCase: IGetOrCreatePackageUseCase,
+    private val getPackageUseCase: GetPackageByNameUseCase,
+    private val getOrCreatePackageUseCase: GetOrCreatePackageUseCase,
 ) : IPyPiController {
 
     override suspend fun root(): Map<String, Any> {

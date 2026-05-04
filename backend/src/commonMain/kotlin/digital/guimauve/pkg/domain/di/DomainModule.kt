@@ -14,9 +14,9 @@ import digital.guimauve.pkg.domain.usecases.auth.*
 import digital.guimauve.pkg.domain.usecases.organizations.IRequireOrganizationForCallUseCase
 import digital.guimauve.pkg.domain.usecases.organizations.RequireOrganizationForCallUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
+import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
-import digital.guimauve.pkg.domain.usecases.packages.IGetOrCreatePackageUseCase
-import digital.guimauve.pkg.domain.usecases.packages.IGetPackageByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.packages.versions.*
@@ -83,13 +83,13 @@ val Application.domainModule
         single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
 
         // Packages
-        single<IGetPackageByNameUseCase> { GetPackageByNameUseCase(get()) }
-        single<IGetOrCreatePackageUseCase> { GetOrCreatePackageUseCase(get()) }
-        single<IGetPackageVersionByNameUseCase> { GetPackageVersionByNameUseCase(get()) }
-        single<IGetOrCreatePackageVersionUseCase> { GetOrCreatePackageVersionUseCase(get()) }
-        single<IGetLatestPackageVersionUseCase> { GetLatestPackageVersionUseCase(get()) }
-        single<IGetPackageVersionFileByNameUseCase> { GetPackageVersionFileByNameUseCase(get()) }
-        single<IGetLatestPackageVersionFileUseCase> { GetLatestPackageVersionFileUseCase(get()) }
+        single<GetPackageByNameUseCase> { GetPackageByNameUseCaseImpl(get()) }
+        single<GetOrCreatePackageUseCase> { GetOrCreatePackageUseCaseImpl(get()) }
+        single<GetPackageVersionByNameUseCase> { GetPackageVersionByNameUseCaseImpl(get()) }
+        single<GetOrCreatePackageVersionUseCase> { GetOrCreatePackageVersionUseCaseImpl(get()) }
+        single<GetLatestPackageVersionUseCase> { GetLatestPackageVersionUseCaseImpl(get()) }
+        single<GetPackageVersionFileByNameUseCase> { GetPackageVersionFileByNameUseCaseImpl(get()) }
+        single<GetLatestPackageVersionFileUseCase> { GetLatestPackageVersionFileUseCaseImpl(get()) }
         single<ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, Uuid>>(
             named<PackageVersionFile>()
         ) {
@@ -110,7 +110,7 @@ val Application.domainModule
         single<IListChildModelSuspendUseCase<PackageVersionFile, Uuid>>(named<PackageVersionFile>()) {
             ListChildModelFromRepositorySuspendUseCase(get<PackageVersionFilesRepository>())
         }
-        single<IDownloadFileUseCase> { DownloadFileUseCase(get()) }
+        single<DownloadFileUseCase> { DownloadFileUseCaseImpl(get()) }
 
         // Maven
         single<ParseMavenPathUseCase> { ParseMavenPathUseCaseImpl() }

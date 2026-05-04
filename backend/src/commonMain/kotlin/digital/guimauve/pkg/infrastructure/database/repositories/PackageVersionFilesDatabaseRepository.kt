@@ -23,11 +23,11 @@ class PackageVersionFilesDatabaseRepository(
         }
     }
 
-    override suspend fun getByName(name: String, parentId: Uuid): PackageVersionFile? =
+    override suspend fun getByName(name: String, packageId: Uuid): PackageVersionFile? =
         database.suspendedTransaction {
             PackageVersionFiles
                 .selectAll()
-                .where { PackageVersionFiles.name eq name and (PackageVersionFiles.versionId eq parentId) }
+                .where { PackageVersionFiles.name eq name and (PackageVersionFiles.versionId eq packageId) }
                 .map(PackageVersionFiles::toPackageVersionFile)
                 .singleOrNull()
         }
