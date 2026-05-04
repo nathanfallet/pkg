@@ -18,6 +18,7 @@ fun Application.module() {
     }
     configureI18n()
     configureSerialization()
+    configureErrorHandling()
     configureSecurity()
     configureSessions()
     configureTemplating()
