@@ -85,6 +85,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(libs.kaccelero.routers.client)
+                api(libs.ktor.resources)
             }
         }
         val jvmTest by getting {

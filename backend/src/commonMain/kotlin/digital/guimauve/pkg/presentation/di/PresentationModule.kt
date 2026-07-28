@@ -3,7 +3,8 @@ package digital.guimauve.pkg.presentation.di
 import digital.guimauve.pkg.controllers.auth.AuthController
 import digital.guimauve.pkg.controllers.auth.AuthRouter
 import digital.guimauve.pkg.controllers.auth.IAuthController
-import digital.guimauve.pkg.controllers.organizations.*
+import digital.guimauve.pkg.controllers.organizations.IOrganizationForCallRouter
+import digital.guimauve.pkg.controllers.organizations.OrganizationForCallRouter
 import digital.guimauve.pkg.controllers.packages.IPackagesController
 import digital.guimauve.pkg.controllers.packages.PackagesController
 import digital.guimauve.pkg.controllers.packages.PackagesRouter
@@ -22,11 +23,11 @@ import digital.guimauve.pkg.controllers.packages.versions.PackageVersionsRouter
 import digital.guimauve.pkg.controllers.users.IUsersController
 import digital.guimauve.pkg.controllers.users.UsersController
 import digital.guimauve.pkg.controllers.users.UsersRouter
-import digital.guimauve.pkg.models.organizations.Organization
-import digital.guimauve.pkg.models.packages.Package
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
 import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
-import digital.guimauve.pkg.models.users.User
+import digital.guimauve.pkg.presentation.routes.organizations.OrganizationsRoutesDependencies
+import digital.guimauve.pkg.presentation.routes.packages.PackagesRoutesDependencies
+import digital.guimauve.pkg.presentation.routes.packages.versions.PackageVersionsRoutesDependencies
+import digital.guimauve.pkg.presentation.routes.users.UsersRoutesDependencies
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -34,33 +35,17 @@ import org.koin.dsl.module
  * Koin module for presentation layer dependencies.
  */
 val presentationModule = module {
+    // API routes
+    single { OrganizationsRoutesDependencies(get(), get(), get()) }
+    single { UsersRoutesDependencies(get(), get(), get(), get()) }
+    single { PackagesRoutesDependencies(get(), get(), get(), get()) }
+    single { PackageVersionsRoutesDependencies(get(), get(), get(), get(), get(), get()) }
+
+    // Dashboard and package registries
     single<IAuthController> { AuthController(get()) }
-    single<IOrganizationsController> {
-        OrganizationsController(
-            get(),
-            get(named<Organization>()),
-            get()
-        )
-    }
-    single<IUsersController> {
-        UsersController(
-            get(named<User>()),
-            get(named<User>())
-        )
-    }
-    single<IPackagesController> {
-        PackagesController(
-            get(named<digital.guimauve.pkg.models.packages.Package>()),
-            get(named<Package>()),
-            get(named<PackageVersion>()),
-        )
-    }
-    single<IPackageVersionsController> {
-        PackageVersionsController(
-            get(named<PackageVersion>()),
-            get(named<PackageVersionFile>()),
-        )
-    }
+    single<IUsersController> { UsersController(get(), get()) }
+    single<IPackagesController> { PackagesController(get(), get(), get()) }
+    single<IPackageVersionsController> { PackageVersionsController(get(), get()) }
     single<IMavenController> {
         MavenController(
             get(),
@@ -92,11 +77,10 @@ val presentationModule = module {
         )
     }
 
-    single<IOrganizationForCallRouter> { OrganizationForCallRouter(get(), get(), get()) }
+    single<IOrganizationForCallRouter> { OrganizationForCallRouter(get(), get()) }
     single { AuthRouter(get(), get()) }
-    single { OrganizationsRouter(get()) }
-    single { UsersRouter(get(), get(), get(), get(), get()) }
-    single { PackagesRouter(get(), get(), get(), get(), get()) }
+    single { UsersRouter(get(), get(), get(), get()) }
+    single { PackagesRouter(get(), get(), get(), get()) }
     single { PackageVersionsRouter(get(), get(), get(), get()) }
     single { MavenRouter(get()) }
     single { NpmRouter(get()) }

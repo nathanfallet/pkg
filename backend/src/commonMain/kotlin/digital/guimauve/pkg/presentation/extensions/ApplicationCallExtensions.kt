@@ -1,13 +1,14 @@
 package digital.guimauve.pkg.presentation.extensions
 
-import dev.kaccelero.commons.exceptions.ControllerException
+import digital.guimauve.pkg.domain.exceptions.auth.InvalidCredentialsException
 import digital.guimauve.pkg.domain.exceptions.auth.InvalidTokenException
+import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationForbiddenException
+import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationNotFoundException
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.models.auth.SessionPayload
 import digital.guimauve.pkg.models.organizations.Organization
 import digital.guimauve.pkg.models.users.User
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -80,13 +81,10 @@ suspend fun ApplicationCall.userOrNull(getUserUseCase: GetUserUseCase): User? =
  * @param getUserUseCase The use case resolving a user from its ID.
  *
  * @return The [User].
- * @throws ControllerException if the call is not authenticated.
+ * @throws InvalidCredentialsException if the call is not authenticated.
  */
 suspend fun ApplicationCall.requireUser(getUserUseCase: GetUserUseCase): User =
-    userOrNull(getUserUseCase)
-    // TODO: throw InvalidCredentialsException once the routes redirect to the login page themselves.
-    // The kaccelero template routers only redirect on a `ControllerException`.
-        ?: throw ControllerException(HttpStatusCode.Unauthorized, "auth_invalid_credentials")
+    userOrNull(getUserUseCase) ?: throw InvalidCredentialsException()
 
 private data class OrganizationForCall(
     val organization: Organization?,
@@ -101,7 +99,8 @@ private val organizationKey = AttributeKey<OrganizationForCall>("organization")
  * @param getOrganizationUseCase The use case resolving an organization from its ID.
  *
  * @return The [Organization].
- * @throws ControllerException if the call is not authenticated, or if the organization does not exist.
+ * @throws InvalidCredentialsException if the call is not authenticated.
+ * @throws OrganizationNotFoundException if the organization does not exist.
  */
 suspend fun ApplicationCall.requireOrganization(
     getUserUseCase: GetUserUseCase,
@@ -112,4 +111,24 @@ suspend fun ApplicationCall.requireOrganization(
         val computed = OrganizationForCall(getOrganizationUseCase(requireUser(getUserUseCase).organizationId))
         attributes.put(organizationKey, computed)
         computed.organization
-    } ?: throw ControllerException(HttpStatusCode.NotFound, "organizations_not_found")
+    } ?: throw OrganizationNotFoundException()
+
+/**
+ * Retrieves the organization of the given ID, which the user of the application call must belong to.
+ * A user only ever has access to its own organization.
+ *
+ * @param organizationId The ID of the organization being accessed.
+ * @param getUserUseCase The use case resolving a user from its ID.
+ * @param getOrganizationUseCase The use case resolving an organization from its ID.
+ *
+ * @return The [Organization].
+ * @throws InvalidCredentialsException if the call is not authenticated.
+ * @throws OrganizationNotFoundException if the organization does not exist.
+ * @throws OrganizationForbiddenException if the user does not belong to that organization.
+ */
+suspend fun ApplicationCall.requireOrganization(
+    organizationId: Uuid,
+    getUserUseCase: GetUserUseCase,
+    getOrganizationUseCase: GetOrganizationUseCase,
+): Organization = requireOrganization(getUserUseCase, getOrganizationUseCase)
+    .takeIf { it.id == organizationId } ?: throw OrganizationForbiddenException()
