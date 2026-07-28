@@ -1,21 +1,20 @@
 package digital.guimauve.pkg.controllers.packages.npm
 
 import dev.kaccelero.commons.exceptions.ControllerException
-import dev.kaccelero.commons.users.IGetUserForCallUseCase
-import dev.kaccelero.commons.users.IRequireUserForCallUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.GetPackageVersionByNameUseCase
+import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.npm.NpmPackage
 import digital.guimauve.pkg.models.packages.npm.NpmVersion
-import digital.guimauve.pkg.models.users.User
+import digital.guimauve.pkg.presentation.extensions.requireUser
+import digital.guimauve.pkg.presentation.extensions.userOrNull
 import io.ktor.http.*
 import io.ktor.server.application.*
 
 class NpmController(
-    private val getUserUseCase: IGetUserForCallUseCase,
-    private val requireUserUseCase: IRequireUserForCallUseCase,
+    private val getUserUseCase: GetUserUseCase,
     private val getPackageUseCase: GetPackageByNameUseCase,
     private val getOrCreatePackageUseCase: GetOrCreatePackageUseCase,
     private val getPackageVersionUseCase: GetPackageVersionByNameUseCase,
@@ -26,12 +25,12 @@ class NpmController(
     }
 
     override suspend fun put(call: ApplicationCall, packageName: String, payload: NpmPackage) {
-        val user = requireUserUseCase(call) as User
+        val user = call.requireUser(getUserUseCase)
         println(payload)
     }
 
     override suspend fun get(call: ApplicationCall, packageName: String): NpmPackage {
-        val user = getUserUseCase(call) as? User
+        val user = call.userOrNull(getUserUseCase)
         val `package` = getPackageUseCase(packageName, PackageFormat.NPM, user)
             ?: throw ControllerException(HttpStatusCode.NotFound, "packages_not_found")
         return NpmPackage(
@@ -43,7 +42,7 @@ class NpmController(
     }
 
     override suspend fun getVersion(call: ApplicationCall, packageName: String, version: String): NpmVersion {
-        val user = getUserUseCase(call) as? User
+        val user = call.userOrNull(getUserUseCase)
         val `package` = getPackageUseCase(packageName, PackageFormat.NPM, user)
             ?: throw ControllerException(HttpStatusCode.NotFound, "packages_not_found")
         val packageVersion = getPackageVersionUseCase(version, `package`.id)

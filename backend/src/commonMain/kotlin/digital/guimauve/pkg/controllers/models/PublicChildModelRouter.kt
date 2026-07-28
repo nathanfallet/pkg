@@ -1,11 +1,12 @@
 package digital.guimauve.pkg.controllers.models
 
 import dev.kaccelero.commons.localization.IGetLocaleForCallUseCase
-import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.controllers.IChildModelController
 import dev.kaccelero.models.IChildModel
 import dev.kaccelero.routers.IChildModelRouter
 import dev.kaccelero.routers.LocalizedTemplateChildModelRouter
+import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
+import digital.guimauve.pkg.presentation.extensions.userOrNull
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import io.ktor.util.reflect.*
@@ -18,7 +19,7 @@ open class PublicChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdateP
     controller: IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>,
     controllerClass: KClass<out IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>>,
     parentRouter: IChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
-    getUserForCallUseCase: IGetUserForCallUseCase,
+    getUserUseCase: GetUserUseCase,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     respondTemplate: (suspend ApplicationCall.(String, Map<String, Any?>) -> Unit)? = null,
     route: String? = null,
@@ -34,7 +35,7 @@ open class PublicChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdateP
     { template, model ->
         if (template == "root/error.ftl") respondTemplate(template, model)
         else (model + mapOf(
-            "user" to getUserForCallUseCase(this),
+            "user" to userOrNull(getUserUseCase),
         )).let { newModel ->
             respondTemplate?.invoke(this, template, newModel) ?: respondTemplate(template, newModel)
         }

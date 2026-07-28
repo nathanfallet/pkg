@@ -34,12 +34,12 @@ import org.koin.dsl.module
  * Koin module for presentation layer dependencies.
  */
 val presentationModule = module {
-    single<IAuthController> { AuthController(get(), get(), get()) }
+    single<IAuthController> { AuthController(get()) }
     single<IOrganizationsController> {
         OrganizationsController(
             get(),
             get(named<Organization>()),
-            get(named<Organization>())
+            get()
         )
     }
     single<IUsersController> {
@@ -72,14 +72,12 @@ val presentationModule = module {
             get(),
             get(),
             get(),
-            get(),
             get(named<PackageVersionFile>()),
             get(),
         )
     }
     single<INpmController> {
         NpmController(
-            get(),
             get(),
             get(),
             get(),
@@ -91,11 +89,10 @@ val presentationModule = module {
             get(),
             get(),
             get(),
-            get(),
         )
     }
 
-    single<IOrganizationForCallRouter> { OrganizationForCallRouter(get(), get()) }
+    single<IOrganizationForCallRouter> { OrganizationForCallRouter(get(), get(), get()) }
     single { AuthRouter(get(), get()) }
     single { OrganizationsRouter(get()) }
     single { UsersRouter(get(), get(), get(), get(), get()) }

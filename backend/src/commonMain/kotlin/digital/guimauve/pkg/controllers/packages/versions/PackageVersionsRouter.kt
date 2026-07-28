@@ -1,10 +1,10 @@
 package digital.guimauve.pkg.controllers.packages.versions
 
 import dev.kaccelero.commons.localization.IGetLocaleForCallUseCase
-import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.routers.APIChildModelRouter
 import dev.kaccelero.routers.ConcatChildModelRouter
 import digital.guimauve.pkg.controllers.models.PublicChildModelRouter
+import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.controllers.packages.PackagesRouter
 import digital.guimauve.pkg.models.packages.Package
 import digital.guimauve.pkg.models.packages.versions.CreatePackageVersionPayload
@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 
 class PackageVersionsRouter(
     controller: IPackageVersionsController,
-    getUserForCallUseCase: IGetUserForCallUseCase,
+    getUserUseCase: GetUserUseCase,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     packagesRouter: PackagesRouter,
 ) : ConcatChildModelRouter<PackageVersion, Uuid, CreatePackageVersionPayload, Unit, Package, Uuid>(
@@ -35,7 +35,7 @@ class PackageVersionsRouter(
         controller,
         IPackageVersionsController::class,
         packagesRouter,
-        getUserForCallUseCase,
+        getUserUseCase,
         getLocaleForCallUseCase,
         route = "versions",
     )

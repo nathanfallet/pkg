@@ -5,6 +5,8 @@ ksp = "2.3.4"
 maven-publish = "0.30.0"
 zodable = "1.7.2"
 kaccelero = "0.7.1"
+bcrypt = "0.10.2"
+junit = "5.11.4"
 mockk = "1.13.12"
 h2 = "2.3.232"
 jsoup = "1.16.2"
@@ -28,12 +30,13 @@ ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 
 # Kaccelero
 kaccelero-routers-client = { module = "dev.kaccelero:routers-client-ktor", version.ref = "kaccelero" }
 kaccelero-routers = { module = "dev.kaccelero:routers-ktor", version.ref = "kaccelero" }
 kaccelero-i18n-freemarker = { module = "dev.kaccelero:i18n-ktor-freemarker", version.ref = "kaccelero" }
-kaccelero-auth = { module = "dev.kaccelero:auth", version.ref = "kaccelero" }
 kaccelero-database-sessions = { module = "dev.kaccelero:database-ktor-sessions", version.ref = "kaccelero" }
 kaccelero-database-sentry = { module = "dev.kaccelero:database-exposed-sentry", version.ref = "kaccelero" }
 kaccelero-health-sentry = { module = "dev.kaccelero:health-sentry-ktor", version.ref = "kaccelero" }
@@ -68,6 +71,7 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 
 # Others
+bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
 logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql" }
@@ -79,7 +83,6 @@ kaccelero-ktor = [
     "kaccelero-routers-client",
     "kaccelero-routers",
     "kaccelero-i18n-freemarker",
-    "kaccelero-auth",
     "kaccelero-database-sessions",
     "kaccelero-database-sentry",
     "kaccelero-health-sentry",

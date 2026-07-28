@@ -1,10 +1,10 @@
 package digital.guimauve.pkg.controllers.packages
 
 import dev.kaccelero.commons.localization.IGetLocaleForCallUseCase
-import dev.kaccelero.commons.users.IGetUserForCallUseCase
 import dev.kaccelero.routers.APIChildModelRouter
 import dev.kaccelero.routers.ConcatChildModelRouter
 import digital.guimauve.pkg.controllers.models.PublicChildModelRouter
+import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.controllers.organizations.IOrganizationForCallRouter
 import digital.guimauve.pkg.controllers.organizations.OrganizationsRouter
 import digital.guimauve.pkg.models.organizations.Organization
@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 
 class PackagesRouter(
     controller: IPackagesController,
-    getUserForCallUseCase: IGetUserForCallUseCase,
+    getUserUseCase: GetUserUseCase,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     organizationForCallRouter: IOrganizationForCallRouter,
     organizationsRouter: OrganizationsRouter,
@@ -37,7 +37,7 @@ class PackagesRouter(
         controller,
         IPackagesController::class,
         organizationForCallRouter,
-        getUserForCallUseCase,
+        getUserUseCase,
         getLocaleForCallUseCase,
     )
 )

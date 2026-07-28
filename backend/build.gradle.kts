@@ -58,6 +58,7 @@ kotlin {
                 api(libs.bundles.ktor.client.api)
                 api(libs.koin.core)
                 api(libs.koin.ktor)
+                api(libs.bcrypt)
                 api(libs.logback.core)
                 api(libs.logback.classic)
                 api(libs.mysql)

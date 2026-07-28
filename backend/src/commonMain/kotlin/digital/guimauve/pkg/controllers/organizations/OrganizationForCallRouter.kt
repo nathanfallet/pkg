@@ -4,9 +4,11 @@ import dev.kaccelero.routers.AbstractModelRouter
 import dev.kaccelero.routers.ControllerRoute
 import dev.kaccelero.routers.ICall
 import dev.kaccelero.routers.KtorCall
-import digital.guimauve.pkg.domain.usecases.organizations.IRequireOrganizationForCallUseCase
+import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
+import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.models.organizations.CreateOrganizationPayload
 import digital.guimauve.pkg.models.organizations.Organization
+import digital.guimauve.pkg.presentation.extensions.requireOrganization
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
@@ -16,7 +18,8 @@ import kotlin.reflect.KClass
 import kotlin.uuid.Uuid
 
 class OrganizationForCallRouter(
-    private val requireOrganizationForCallUseCase: IRequireOrganizationForCallUseCase,
+    private val getUserUseCase: GetUserUseCase,
+    private val getOrganizationUseCase: GetOrganizationUseCase,
     controller: IOrganizationsController,
 ) : AbstractModelRouter<Organization, Uuid, CreateOrganizationPayload, Unit>(
     typeInfo<Organization>(),
@@ -29,7 +32,8 @@ class OrganizationForCallRouter(
     ""
 ), IOrganizationForCallRouter {
 
-    override suspend fun get(call: ICall): Organization = requireOrganizationForCallUseCase((call as KtorCall).call)
+    override suspend fun get(call: ICall): Organization =
+        (call as KtorCall).call.requireOrganization(getUserUseCase, getOrganizationUseCase)
 
     override suspend fun <Payload : Any> decodePayload(call: ApplicationCall, type: KClass<Payload>): Payload =
         throw UnsupportedOperationException()

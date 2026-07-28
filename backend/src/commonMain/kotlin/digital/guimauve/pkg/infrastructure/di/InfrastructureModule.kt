@@ -4,6 +4,8 @@ import dev.kaccelero.commons.sessions.ISessionsRepository
 import dev.kaccelero.commons.sessions.SessionsDatabaseRepository
 import dev.kaccelero.database.IDatabase
 import digital.guimauve.pkg.domain.repositories.*
+import digital.guimauve.pkg.domain.services.PasswordEncoderService
+import digital.guimauve.pkg.infrastructure.bcrypt.BCryptPasswordEncoderService
 import digital.guimauve.pkg.infrastructure.database.Database
 import digital.guimauve.pkg.infrastructure.database.repositories.*
 import digital.guimauve.pkg.services.storage.IStorageService
@@ -33,6 +35,7 @@ val Application.infrastructureModule: Module
         }
 
         // Services
+        single<PasswordEncoderService> { BCryptPasswordEncoderService() }
         single<IJWTService> {
             JWTService(
                 environment.config.property("jwt.secret").getString(),
