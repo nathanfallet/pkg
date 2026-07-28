@@ -1,14 +1,19 @@
 package digital.guimauve.pkg.presentation.config
 
-import dev.kaccelero.commons.localization.TDirective
-import dev.kaccelero.plugins.i18n
+import digital.guimauve.pkg.domain.services.TranslateService
+import digital.guimauve.pkg.presentation.freemarker.TranslateDirective
 import freemarker.cache.ClassTemplateLoader
+import freemarker.core.HTMLOutputFormat
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
+import org.koin.ktor.ext.inject
 
 fun Application.configureTemplating() {
+    val translateService by inject<TranslateService>()
+
     install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
-        setSharedVariable("t", TDirective(this@configureTemplating.i18n))
+        outputFormat = HTMLOutputFormat.INSTANCE
+        setSharedVariable("t", TranslateDirective(translateService))
     }
 }

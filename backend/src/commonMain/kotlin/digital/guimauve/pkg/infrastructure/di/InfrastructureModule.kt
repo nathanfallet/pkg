@@ -5,9 +5,11 @@ import dev.kaccelero.commons.sessions.SessionsDatabaseRepository
 import dev.kaccelero.database.IDatabase
 import digital.guimauve.pkg.domain.repositories.*
 import digital.guimauve.pkg.domain.services.PasswordEncoderService
+import digital.guimauve.pkg.domain.services.TranslateService
 import digital.guimauve.pkg.infrastructure.bcrypt.BCryptPasswordEncoderService
 import digital.guimauve.pkg.infrastructure.database.Database
 import digital.guimauve.pkg.infrastructure.database.repositories.*
+import digital.guimauve.pkg.infrastructure.i18n.PropertiesTranslateService
 import digital.guimauve.pkg.services.storage.IStorageService
 import digital.guimauve.pkg.services.storage.ProxyStorageService
 import digital.guimauve.pkg.services.tokens.IJWTService
@@ -36,6 +38,7 @@ val Application.infrastructureModule: Module
 
         // Services
         single<PasswordEncoderService> { BCryptPasswordEncoderService() }
+        single<TranslateService> { PropertiesTranslateService() }
         single<IJWTService> {
             JWTService(
                 environment.config.property("jwt.secret").getString(),

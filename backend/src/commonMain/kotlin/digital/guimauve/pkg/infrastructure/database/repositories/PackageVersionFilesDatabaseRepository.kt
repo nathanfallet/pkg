@@ -23,6 +23,15 @@ class PackageVersionFilesDatabaseRepository(
         }
     }
 
+    override suspend fun list(parentId: Uuid, context: IContext?): List<PackageVersionFile> =
+        database.suspendedTransaction {
+            PackageVersionFiles
+                .selectAll()
+                .where { PackageVersionFiles.versionId eq parentId }
+                .orderBy(PackageVersionFiles.name to SortOrder.ASC)
+                .map(PackageVersionFiles::toPackageVersionFile)
+        }
+
     override suspend fun getByName(name: String, packageId: Uuid): PackageVersionFile? =
         database.suspendedTransaction {
             PackageVersionFiles

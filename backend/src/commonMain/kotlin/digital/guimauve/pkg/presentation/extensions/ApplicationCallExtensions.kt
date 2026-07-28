@@ -9,12 +9,44 @@ import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.models.auth.SessionPayload
 import digital.guimauve.pkg.models.organizations.Organization
 import digital.guimauve.pkg.models.users.User
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.freemarker.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
 import kotlin.uuid.Uuid
+
+/**
+ * The languages the message bundle is translated into, the first one being the default.
+ */
+private val SUPPORTED_LANGUAGES = listOf("en")
+
+/**
+ * Resolves the language of the application call from its `Accept-Language` header.
+ *
+ * @return A supported language tag, e.g. `en`.
+ */
+fun ApplicationCall.language(): String = request.acceptLanguageItems()
+    .map { it.value.substringBefore('-').lowercase() }
+    .firstOrNull { it in SUPPORTED_LANGUAGES }
+    ?: SUPPORTED_LANGUAGES.first()
+
+/**
+ * Renders a template of the dashboard.
+ *
+ * @param template The name of the template.
+ * @param view The single view the template reads everything from.
+ * @param status The status to respond with.
+ */
+suspend fun ApplicationCall.respondView(
+    template: String,
+    view: Any,
+    status: HttpStatusCode = HttpStatusCode.OK,
+) = respond(status, FreeMarkerContent(template, mapOf("view" to view, "locale" to language())))
 
 /**
  * Retrieves the session of the application call.

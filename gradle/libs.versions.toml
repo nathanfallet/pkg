@@ -36,7 +36,6 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 # Kaccelero
 kaccelero-routers-client = { module = "dev.kaccelero:routers-client-ktor", version.ref = "kaccelero" }
 kaccelero-routers = { module = "dev.kaccelero:routers-ktor", version.ref = "kaccelero" }
-kaccelero-i18n-freemarker = { module = "dev.kaccelero:i18n-ktor-freemarker", version.ref = "kaccelero" }
 kaccelero-database-sessions = { module = "dev.kaccelero:database-ktor-sessions", version.ref = "kaccelero" }
 kaccelero-database-sentry = { module = "dev.kaccelero:database-exposed-sentry", version.ref = "kaccelero" }
 kaccelero-health-sentry = { module = "dev.kaccelero:health-sentry-ktor", version.ref = "kaccelero" }
@@ -84,7 +83,6 @@ s3 = { module = "software.amazon.awssdk:s3", version.ref = "s3" }
 kaccelero-ktor = [
     "kaccelero-routers-client",
     "kaccelero-routers",
-    "kaccelero-i18n-freemarker",
     "kaccelero-database-sessions",
     "kaccelero-database-sentry",
     "kaccelero-health-sentry",

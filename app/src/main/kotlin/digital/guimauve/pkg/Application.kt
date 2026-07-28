@@ -16,12 +16,11 @@ fun Application.module() {
     install(Koin) {
         modules(domainModule, presentationModule, infrastructureModule)
     }
-    configureI18n()
     configureSerialization()
+    configureTemplating()
     configureErrorHandling()
     configureSecurity()
     configureSessions()
-    configureTemplating()
     configureRouting()
     configureMonitoring()
 }

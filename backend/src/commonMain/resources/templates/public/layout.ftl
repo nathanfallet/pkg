@@ -1,10 +1,10 @@
-<#macro page>
+<#macro page layout>
     <!DOCTYPE html>
-    <html lang="fr">
+    <html lang="${locale}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>PKG</title>
+        <title><@t key=layout.title /> — PKG</title>
 
         <!-- Zephyr Bootstrap Theme -->
         <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -22,12 +22,13 @@
             <a class="navbar-brand" href="/">PKG</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/packages">Packages</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/users">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/packages"><@t key="nav_packages" /></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/users"><@t key="nav_users" /></a></li>
                 </ul>
-                <#if user??>
+                <#if layout.user??>
                     <span class="navbar-text">
-                        Hello ${user.email} | <a href="/auth/logout" class="text-light">Logout</a>
+                        ${layout.user.email} |
+                        <a href="/auth/logout" class="text-light"><@t key="auth_field_logout" /></a>
                     </span>
                 <#else>
                     <a href="/auth/login" class="btn btn-secondary my-2 my-sm-0"><@t key="auth_field_login" /></a>

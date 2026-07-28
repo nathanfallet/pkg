@@ -6,6 +6,12 @@ plugins {
     application
 }
 
+kotlin {
+    compilerOptions {
+        optIn.add("kotlin.uuid.ExperimentalUuidApi")
+    }
+}
+
 application {
     mainClass.set("digital.guimauve.pkg.ApplicationKt")
 

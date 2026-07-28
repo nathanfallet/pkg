@@ -1,10 +1,10 @@
-<#import "../template.ftl" as template>
-<@template.page>
+<#import "../layout.ftl" as l>
+<@l.page view.layout>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h2><@t key="auth_login_title" /></h2>
-            <#if error??>
-                <div id="alert-error" class="alert alert-danger" role="alert"><@t key=error /></div>
+            <#if view.error??>
+                <div id="alert-error" class="alert alert-danger" role="alert"><@t key=view.error /></div>
             </#if>
             <form method="post">
                 <div class="mb-3">
@@ -19,4 +19,4 @@
             </form>
         </div>
     </div>
-</@template.page>
+</@l.page>

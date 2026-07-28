@@ -32,6 +32,15 @@ class PackageVersionsDatabaseRepository(
                 .map(PackageVersions::toPackageVersion)
         }
 
+    override suspend fun get(id: Uuid, parentId: Uuid, context: IContext?): PackageVersion? =
+        database.suspendedTransaction {
+            PackageVersions
+                .selectAll()
+                .where { PackageVersions.id eq id and (PackageVersions.packageId eq parentId) }
+                .map(PackageVersions::toPackageVersion)
+                .singleOrNull()
+        }
+
     override suspend fun getByName(name: String, packageId: Uuid): PackageVersion? =
         database.suspendedTransaction {
             PackageVersions

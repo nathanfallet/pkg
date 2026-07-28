@@ -1,13 +1,11 @@
 package digital.guimauve.pkg.presentation.config
 
 import dev.kaccelero.routers.createRoutes
-import digital.guimauve.pkg.controllers.auth.AuthRouter
-import digital.guimauve.pkg.controllers.packages.PackagesRouter
 import digital.guimauve.pkg.controllers.packages.maven.MavenRouter
 import digital.guimauve.pkg.controllers.packages.npm.NpmRouter
 import digital.guimauve.pkg.controllers.packages.pypi.PyPiRouter
-import digital.guimauve.pkg.controllers.packages.versions.PackageVersionsRouter
-import digital.guimauve.pkg.controllers.users.UsersRouter
+import digital.guimauve.pkg.presentation.routes.auth.authRoutes
+import digital.guimauve.pkg.presentation.routes.dashboard.dashboardRoutes
 import digital.guimauve.pkg.presentation.routes.organizations.organizationsRoutes
 import digital.guimauve.pkg.presentation.routes.packages.packagesRoutes
 import digital.guimauve.pkg.presentation.routes.packages.versions.packageVersionsRoutes
@@ -44,14 +42,8 @@ fun Application.configureRouting() {
             packageVersionsRoutes(get())
 
             // Dashboard
-            listOf(
-                get<AuthRouter>(),
-                get<UsersRouter>(),
-                get<PackagesRouter>(),
-                get<PackageVersionsRouter>(),
-            ).forEach {
-                it.createRoutes(this)
-            }
+            authRoutes(get())
+            dashboardRoutes(get())
         }
         authenticate("auth-basic", optional = true) {
             listOf(

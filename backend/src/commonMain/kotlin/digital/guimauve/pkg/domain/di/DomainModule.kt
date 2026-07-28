@@ -1,9 +1,5 @@
 package digital.guimauve.pkg.domain.di
 
-import dev.kaccelero.commons.localization.GetLocaleForCallUseCase
-import dev.kaccelero.commons.localization.IGetLocaleForCallUseCase
-import dev.kaccelero.commons.localization.ITranslateUseCase
-import dev.kaccelero.commons.localization.TranslateFromPropertiesUseCase
 import dev.kaccelero.commons.repositories.ICreateChildModelWithContextSuspendUseCase
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCaseImpl
@@ -29,10 +25,6 @@ import kotlin.uuid.Uuid
  */
 val Application.domainModule
     get() = module {
-        // Application
-        single<ITranslateUseCase> { TranslateFromPropertiesUseCase() }
-        single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
-
         // Auth
         single<LoginUseCase> { LoginUseCaseImpl(get(), get()) }
 
