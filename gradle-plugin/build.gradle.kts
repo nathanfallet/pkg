@@ -18,8 +18,8 @@ group = "digital.guimauve.pkg"
 version = "0.1.3"
 
 gradlePlugin {
-    website = "https://github.com/guimauvedigital/pkg"
-    vcsUrl = "https://github.com/guimauvedigital/pkg.git"
+    website = "https://github.com/nathanfallet/pkg"
+    vcsUrl = "https://github.com/nathanfallet/pkg.git"
 
     plugins {
         create("pkg-gradle-plugin") {
