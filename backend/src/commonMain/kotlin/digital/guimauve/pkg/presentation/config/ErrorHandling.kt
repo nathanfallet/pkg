@@ -5,7 +5,14 @@ import digital.guimauve.pkg.domain.exceptions.auth.InvalidTokenException
 import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationForbiddenException
 import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.PackageNotFoundException
+import digital.guimauve.pkg.domain.exceptions.packages.PackagePrivateException
+import digital.guimauve.pkg.domain.exceptions.packages.PackageWriteForbiddenException
+import digital.guimauve.pkg.domain.exceptions.packages.maven.InvalidMavenPathException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.PackageVersionNotFoundException
+import digital.guimauve.pkg.domain.exceptions.packages.versions.files.FileNotUploadedException
+import digital.guimauve.pkg.domain.exceptions.packages.versions.files.PackageVersionFileAlreadyExistsException
+import digital.guimauve.pkg.domain.exceptions.packages.versions.files.PackageVersionFileNotFoundException
+import digital.guimauve.pkg.domain.exceptions.storage.StorageFileNotFoundException
 import digital.guimauve.pkg.domain.exceptions.users.UserNotFoundException
 import digital.guimauve.pkg.domain.services.TranslateService
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
@@ -79,8 +86,31 @@ fun Application.configureErrorHandling() {
         exception<PackageNotFoundException> { call, _ ->
             call.fail(HttpStatusCode.NotFound, "packages_not_found")
         }
+        exception<PackagePrivateException> { call, _ ->
+            call.fail(HttpStatusCode.Unauthorized, "packages_private")
+        }
+        exception<PackageWriteForbiddenException> { call, _ ->
+            call.fail(HttpStatusCode.Forbidden, "packages_write_forbidden")
+        }
+        exception<InvalidMavenPathException> { call, _ ->
+            call.fail(HttpStatusCode.NotFound, "invalid_path")
+        }
         exception<PackageVersionNotFoundException> { call, _ ->
             call.fail(HttpStatusCode.NotFound, "package_versions_not_found")
+        }
+
+        // Files
+        exception<PackageVersionFileNotFoundException> { call, _ ->
+            call.fail(HttpStatusCode.NotFound, "package_version_files_not_found")
+        }
+        exception<PackageVersionFileAlreadyExistsException> { call, _ ->
+            call.fail(HttpStatusCode.BadRequest, "files_already_exists")
+        }
+        exception<FileNotUploadedException> { call, _ ->
+            call.fail(HttpStatusCode.BadRequest, "file_not_uploaded")
+        }
+        exception<StorageFileNotFoundException> { call, _ ->
+            call.fail(HttpStatusCode.NotFound, "storage_file_not_found")
         }
 
         // Generic (500)

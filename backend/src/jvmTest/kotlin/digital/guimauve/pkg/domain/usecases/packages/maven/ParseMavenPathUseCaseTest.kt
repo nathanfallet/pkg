@@ -1,6 +1,6 @@
 package digital.guimauve.pkg.domain.usecases.packages.maven
 
-import dev.kaccelero.commons.exceptions.ControllerException
+import digital.guimauve.pkg.domain.exceptions.packages.maven.InvalidMavenPathException
 import digital.guimauve.pkg.models.packages.maven.MavenPath
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -67,7 +67,7 @@ class ParseMavenPathUseCaseTest {
     @Test
     fun testInvalid() {
         val usecase = ParseMavenPathUseCaseImpl()
-        assertFailsWith(ControllerException::class) {
+        assertFailsWith(InvalidMavenPathException::class) {
             usecase.invoke(listOf("digital"))
         }
     }

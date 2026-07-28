@@ -1,47 +1,27 @@
 package digital.guimauve.pkg
 
-import digital.guimauve.pkg.domain.repositories.OrganizationsRepository
-import digital.guimauve.pkg.domain.repositories.PackageVersionFilesRepository
-import digital.guimauve.pkg.domain.repositories.PackageVersionsRepository
-import digital.guimauve.pkg.domain.repositories.PackagesRepository
-import digital.guimauve.pkg.domain.usecases.users.CreateUserUseCase
-import digital.guimauve.pkg.models.organizations.CreateOrganizationPayload
-import digital.guimauve.pkg.models.packages.CreatePackagePayload
-import digital.guimauve.pkg.models.packages.Package
-import digital.guimauve.pkg.models.packages.PackageFormat
-import digital.guimauve.pkg.models.packages.versions.CreatePackageVersionPayload
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
-import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
-import digital.guimauve.pkg.models.users.CreateUserPayload
-import digital.guimauve.pkg.models.users.UserContext
-import digital.guimauve.pkg.services.storage.FileContext
-import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
-import kotlinx.coroutines.runBlocking
-import org.koin.ktor.ext.get
-import java.io.ByteArrayInputStream
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
+/**
+ * Boots the real application, so these cover the wiring the route tests mock away: the Koin graph,
+ * the database, and the shape of the routing tree. What each route answers is covered by the route
+ * tests of the backend module.
+ */
 class ApplicationTest {
 
-    private fun withApplication(
-        seed: suspend Application.() -> Unit = {},
-        block: suspend ApplicationTestBuilder.() -> Unit,
-    ) = testApplication {
+    private fun withApplication(block: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
         environment {
             config = ApplicationConfig("application.test.conf")
         }
         application {
             module()
-            runBlocking { seed() }
         }
         block()
     }
@@ -84,98 +64,14 @@ class ApplicationTest {
     }
 
     /**
-     * The dashboard sends an anonymous visitor to the login page instead of answering 401.
-     */
-    @Test
-    fun testDashboardRedirectsToLogin() = withApplication {
-        val client = client.config { followRedirects = false }
-        listOf("/packages", "/users").forEach { path ->
-            val response = client.get(path)
-            assertEquals(HttpStatusCode.Found, response.status, "unexpected status for $path")
-            assertEquals("/auth/login?redirect=$path", response.headers[HttpHeaders.Location])
-        }
-    }
-
-    @Test
-    fun testRootRedirectsToPackages() = withApplication {
-        val response = client.config { followRedirects = false }.get("/")
-        assertEquals(HttpStatusCode.Found, response.status)
-        assertEquals("/packages", response.headers[HttpHeaders.Location])
-    }
-
-    /**
-     * The login page renders through the layout, so this covers the `t` directive too.
+     * Renders a page of the dashboard, which is what proves the message bundle and the freemarker
+     * directive are resolved through the real Koin graph.
      */
     @Test
     fun testLoginPageIsServed() = withApplication {
         val response = client.get("/auth/login")
         assertEquals(HttpStatusCode.OK, response.status)
-        val body = response.bodyAsText()
-        assertContains(body, "<title>Sign in — PKG</title>")
-        assertContains(body, """<label for="email" class="form-label">Email address</label>""")
-    }
-
-    /**
-     * Renders every dashboard page of a signed in user, which is what catches a view field the
-     * templates do not know about.
-     */
-    @Test
-    fun testDashboardPagesRender() {
-        val email = "dashboard@guimauve.digital"
-        val password = "correct horse battery staple"
-        lateinit var pkg: Package
-        lateinit var version: PackageVersion
-        withApplication(seed = {
-            val organization = get<OrganizationsRepository>().create(CreateOrganizationPayload("Guimauve Digital"))!!
-            val user = get<CreateUserUseCase>()(CreateUserPayload(email, password), organization.id)!!
-            pkg = get<PackagesRepository>().create(
-                CreatePackagePayload("com.example:library", PackageFormat.MAVEN, isPublic = true),
-                organization.id
-            )!!
-            version = get<PackageVersionsRepository>().create(
-                CreatePackageVersionPayload("1.0.0", metadata = null),
-                pkg.id,
-                UserContext(user.id)
-            )!!
-            get<PackageVersionFilesRepository>().create(
-                CreatePackageVersionFilePayload("library-1.0.0.jar", pkg, version),
-                version.id,
-                FileContext(ByteArrayInputStream(ByteArray(0)), ContentType.Application.OctetStream, 2048)
-            )!!
-        }) {
-            val client = client.config {
-                install(HttpCookies)
-                followRedirects = false
-            }
-
-            val login = client.submitForm(
-                url = "/auth/login",
-                formParameters = parameters {
-                    append("email", email)
-                    append("password", password)
-                }
-            )
-            assertEquals(HttpStatusCode.Found, login.status, "sign in failed")
-
-            val packages = client.get("/packages")
-            assertEquals(HttpStatusCode.OK, packages.status)
-            assertContains(packages.bodyAsText(), "com.example:library")
-
-            val packageDetail = client.get("/packages/${pkg.id}")
-            assertEquals(HttpStatusCode.OK, packageDetail.status)
-            assertContains(packageDetail.bodyAsText(), "1.0.0")
-
-            val versionDetail = client.get("/packages/${pkg.id}/versions/${version.id}")
-            assertEquals(HttpStatusCode.OK, versionDetail.status)
-            with(versionDetail.bodyAsText()) {
-                assertContains(this, "library-1.0.0.jar")
-                assertContains(this, "2.0 KB")
-            }
-
-            val users = client.get("/users")
-            assertEquals(HttpStatusCode.OK, users.status)
-            assertContains(users.bodyAsText(), email)
-        }
+        assertContains(response.bodyAsText(), "<title>Sign in — PKG</title>")
     }
 
     /**

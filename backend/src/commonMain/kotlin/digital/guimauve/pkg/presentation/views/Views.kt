@@ -102,3 +102,21 @@ data class ErrorPageView(
     val status: String,
     val message: String,
 )
+
+/**
+ * The two pages below are not part of the dashboard: they are the simple repository index pip
+ * reads, described by PEP 503.
+ */
+data class PyPiLinkView(
+    val name: String,
+    val url: String,
+)
+
+data class PyPiRootPageView(
+    val packages: List<PyPiLinkView>,
+)
+
+data class PyPiPackagePageView(
+    val name: String,
+    val files: List<PyPiLinkView>,
+)

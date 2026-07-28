@@ -1,22 +1,14 @@
 package digital.guimauve.pkg.presentation.di
 
-import digital.guimauve.pkg.controllers.packages.maven.IMavenController
-import digital.guimauve.pkg.controllers.packages.maven.MavenController
-import digital.guimauve.pkg.controllers.packages.maven.MavenRouter
-import digital.guimauve.pkg.controllers.packages.npm.INpmController
-import digital.guimauve.pkg.controllers.packages.npm.NpmController
-import digital.guimauve.pkg.controllers.packages.npm.NpmRouter
-import digital.guimauve.pkg.controllers.packages.pypi.IPyPiController
-import digital.guimauve.pkg.controllers.packages.pypi.PyPiController
-import digital.guimauve.pkg.controllers.packages.pypi.PyPiRouter
-import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.presentation.routes.auth.AuthRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.dashboard.DashboardRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.organizations.OrganizationsRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.packages.PackagesRoutesDependencies
+import digital.guimauve.pkg.presentation.routes.packages.maven.MavenRoutesDependencies
+import digital.guimauve.pkg.presentation.routes.packages.npm.NpmRoutesDependencies
+import digital.guimauve.pkg.presentation.routes.packages.pypi.PyPiRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.packages.versions.PackageVersionsRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.users.UsersRoutesDependencies
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -33,9 +25,9 @@ val presentationModule = module {
     single { AuthRoutesDependencies(get(), get()) }
     single { DashboardRoutesDependencies(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    // Package registries
-    single<IMavenController> {
-        MavenController(
+    // Package registry routes
+    single {
+        MavenRoutesDependencies(
             get(),
             get(),
             get(),
@@ -43,29 +35,12 @@ val presentationModule = module {
             get(),
             get(),
             get(),
-            get(),
-            get(),
-            get(named<PackageVersionFile>()),
-            get(),
-        )
-    }
-    single<INpmController> {
-        NpmController(
             get(),
             get(),
             get(),
             get(),
         )
     }
-    single<IPyPiController> {
-        PyPiController(
-            get(),
-            get(),
-            get(),
-        )
-    }
-
-    single { MavenRouter(get()) }
-    single { NpmRouter(get()) }
-    single { PyPiRouter(get()) }
+    single { NpmRoutesDependencies(get(), get(), get()) }
+    single { PyPiRoutesDependencies(get(), get()) }
 }

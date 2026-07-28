@@ -1,6 +1,5 @@
 package digital.guimauve.pkg.domain.di
 
-import dev.kaccelero.commons.repositories.ICreateChildModelWithContextSuspendUseCase
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
@@ -13,12 +12,8 @@ import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.*
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.*
 import digital.guimauve.pkg.domain.usecases.users.*
-import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
-import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import io.ktor.server.application.*
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import kotlin.uuid.Uuid
 
 /**
  * Koin module for domain layer dependencies.
@@ -57,11 +52,7 @@ val Application.domainModule
         single<ListPackageVersionFilesUseCase> { ListPackageVersionFilesUseCaseImpl(get()) }
         single<GetPackageVersionFileByNameUseCase> { GetPackageVersionFileByNameUseCaseImpl(get()) }
         single<GetLatestPackageVersionFileUseCase> { GetLatestPackageVersionFileUseCaseImpl(get()) }
-        single<ICreateChildModelWithContextSuspendUseCase<PackageVersionFile, CreatePackageVersionFilePayload, Uuid>>(
-            named<PackageVersionFile>()
-        ) {
-            CreatePackageVersionFileUseCase(get(), get())
-        }
+        single<CreatePackageVersionFileUseCase> { CreatePackageVersionFileUseCaseImpl(get(), get()) }
         single<DownloadFileUseCase> { DownloadFileUseCaseImpl(get()) }
 
         // Maven

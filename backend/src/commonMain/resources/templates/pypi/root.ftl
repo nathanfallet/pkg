@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta name="pypi:repository-version" content="1.3">
+    <title>Simple index</title>
+</head>
 <body>
-<#list packages as package>
-    <a href="/${package.name}/">${package.name}</a>
+<h1>Simple index</h1>
+<#list view.packages as package>
+    <a href="${package.url}">${package.name}</a><br/>
 </#list>
 </body>
 </html>

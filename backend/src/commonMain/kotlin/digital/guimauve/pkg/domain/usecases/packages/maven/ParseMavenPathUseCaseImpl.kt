@@ -1,12 +1,11 @@
 package digital.guimauve.pkg.domain.usecases.packages.maven
 
-import dev.kaccelero.commons.exceptions.ControllerException
+import digital.guimauve.pkg.domain.exceptions.packages.maven.InvalidMavenPathException
 import digital.guimauve.pkg.models.packages.maven.MavenPath
-import io.ktor.http.*
 
 class ParseMavenPathUseCaseImpl : ParseMavenPathUseCase {
     override fun invoke(segments: List<String>): MavenPath {
-        if (segments.size < 3) throw ControllerException(HttpStatusCode.NotFound, "invalid_path")
+        if (segments.size < 3) throw InvalidMavenPathException()
         val filename = segments.last()
 
         val possibleVersion = segments[segments.size - 2]

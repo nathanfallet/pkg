@@ -1,13 +1,12 @@
 package digital.guimauve.pkg.presentation.config
 
-import dev.kaccelero.routers.createRoutes
-import digital.guimauve.pkg.controllers.packages.maven.MavenRouter
-import digital.guimauve.pkg.controllers.packages.npm.NpmRouter
-import digital.guimauve.pkg.controllers.packages.pypi.PyPiRouter
 import digital.guimauve.pkg.presentation.routes.auth.authRoutes
 import digital.guimauve.pkg.presentation.routes.dashboard.dashboardRoutes
 import digital.guimauve.pkg.presentation.routes.organizations.organizationsRoutes
+import digital.guimauve.pkg.presentation.routes.packages.maven.mavenRoutes
+import digital.guimauve.pkg.presentation.routes.packages.npm.npmRoutes
 import digital.guimauve.pkg.presentation.routes.packages.packagesRoutes
+import digital.guimauve.pkg.presentation.routes.packages.pypi.pypiRoutes
 import digital.guimauve.pkg.presentation.routes.packages.versions.packageVersionsRoutes
 import digital.guimauve.pkg.presentation.routes.users.usersRoutes
 import io.ktor.http.*
@@ -45,20 +44,14 @@ fun Application.configureRouting() {
             authRoutes(get())
             dashboardRoutes(get())
         }
+
+        // Package registries, each authenticated the way its client does it
         authenticate("auth-basic", optional = true) {
-            listOf(
-                get<MavenRouter>(),
-                get<PyPiRouter>(),
-            ).forEach {
-                it.createRoutes(this)
-            }
+            mavenRoutes(get())
+            pypiRoutes(get())
         }
         authenticate("auth-bearer", optional = true) {
-            listOf(
-                get<NpmRouter>(),
-            ).forEach {
-                it.createRoutes(this)
-            }
+            npmRoutes(get())
         }
 
         staticResources("", "static")
