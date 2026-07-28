@@ -37,7 +37,7 @@ class PackagesDatabaseRepository(
                 .selectAll()
                 .where { Packages.id eq id and (Packages.organizationId eq organizationId) }
                 .map(Packages::toPackage)
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun getByName(name: String, format: PackageFormat): Package? =
@@ -46,7 +46,7 @@ class PackagesDatabaseRepository(
                 .selectAll()
                 .where { Packages.name eq name and (Packages.format eq format) }
                 .map(Packages::toPackage)
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun create(payload: CreatePackagePayload, organizationId: Uuid): Package? =
@@ -58,7 +58,7 @@ class PackagesDatabaseRepository(
                 it[isPublic] = payload.isPublic
                 it[createdAt] = Clock.System.now()
             }
-        }.resultedValues?.map(Packages::toPackage)?.singleOrNull()
+        }.resultedValues?.map(Packages::toPackage)?.firstOrNull()
 
     override suspend fun update(id: Uuid, payload: UpdatePackagePayload, organizationId: Uuid): Boolean =
         transactionManager.suspendTransaction {

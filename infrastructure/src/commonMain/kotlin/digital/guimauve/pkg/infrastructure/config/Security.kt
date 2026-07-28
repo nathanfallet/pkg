@@ -1,13 +1,12 @@
 package digital.guimauve.pkg.infrastructure.config
 
+import digital.guimauve.pkg.domain.exceptions.auth.InvalidTokenException
 import digital.guimauve.pkg.domain.models.auth.LoginPayload
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.infrastructure.jwt.JwtTokenService
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.response.*
 import org.koin.ktor.ext.inject
 
 fun Application.configureSecurity() {
@@ -19,9 +18,8 @@ fun Application.configureSecurity() {
         jwt("api-jwt") {
             verifier(tokenService.verifier)
             validate { JWTPrincipal(it.payload) }
-            challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, mapOf("error" to "auth_invalid_token"))
-            }
+            // Let the status pages own the response shape, rather than writing it a second time.
+            challenge { _, _ -> throw InvalidTokenException() }
         }
 
         // The maven and PyPI clients, which send the credentials of the user

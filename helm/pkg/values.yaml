@@ -65,17 +65,17 @@ ingress:
       hosts:
         - pkg.guimauve.digital
 
-resources: { }
-# We usually recommend not to specify default resources and to leave this as a conscious
-# choice for the user. This also increases chances charts run on environments with little
-# resources, such as Minikube. If you do want to specify resources, uncomment the following
-# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-# limits:
-#   cpu: 100m
-#   memory: 128Mi
-# requests:
-#   cpu: 100m
-#   memory: 128Mi
+# The autoscaler targets a percentage of these requests, so leaving them empty means it can never
+# compute a utilization and the deployment stays pinned at minReplicas.
+resources:
+  requests:
+    cpu: 250m
+    # Equal to the limit on purpose: the autoscaler measures memory against the request while the
+    # JVM sizes its heap off the limit, so a lower request keeps the target permanently exceeded.
+    memory: 1Gi
+  limits:
+    # No cpu limit on purpose: throttling a JVM costs more than it saves.
+    memory: 1Gi
 
 livenessProbe:
   initialDelaySeconds: 30

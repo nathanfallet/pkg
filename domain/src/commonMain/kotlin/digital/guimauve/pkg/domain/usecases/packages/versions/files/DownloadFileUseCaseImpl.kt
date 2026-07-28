@@ -11,6 +11,7 @@ class DownloadFileUseCaseImpl(
 ) : DownloadFileUseCase {
     override suspend fun invoke(input: PackageVersionFile): ByteArray {
         val stream = storageService.downloadStream(input.path) ?: throw StorageFileNotFoundException()
-        return withContext(Dispatchers.IO) { stream.readBytes() }
+        // `readBytes` does not close the stream, and the local storage hands out a live file handle.
+        return withContext(Dispatchers.IO) { stream.use { it.readBytes() } }
     }
 }

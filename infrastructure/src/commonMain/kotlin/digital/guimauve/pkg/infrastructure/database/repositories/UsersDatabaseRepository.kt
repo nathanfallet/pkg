@@ -36,7 +36,7 @@ class UsersDatabaseRepository(
                 .selectAll()
                 .where { Users.id eq id }
                 .map(Users::toUser)
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun get(id: Uuid, organizationId: Uuid): User? =
@@ -45,7 +45,7 @@ class UsersDatabaseRepository(
                 .selectAll()
                 .where { Users.id eq id and (Users.organizationId eq organizationId) }
                 .map(Users::toUser)
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun getForEmail(email: String, includePassword: Boolean): User? =
@@ -54,7 +54,7 @@ class UsersDatabaseRepository(
                 .selectAll()
                 .where { Users.email eq email }
                 .map { Users.toUser(it, includePassword) }
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun create(payload: CreateUserPayload, organizationId: Uuid): User? =
@@ -64,6 +64,6 @@ class UsersDatabaseRepository(
                 it[email] = payload.email
                 it[password] = payload.password
             }
-        }.resultedValues?.map(Users::toUser)?.singleOrNull()
+        }.resultedValues?.map(Users::toUser)?.firstOrNull()
 
 }

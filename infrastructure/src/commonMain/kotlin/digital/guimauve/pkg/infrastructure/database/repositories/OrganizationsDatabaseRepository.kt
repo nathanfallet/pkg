@@ -11,7 +11,7 @@ import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.uuid.Uuid
 
-class OrganizationDatabaseRepository(
+class OrganizationsDatabaseRepository(
     private val transactionManager: TransactionManager,
 ) : OrganizationsRepository {
 
@@ -21,20 +21,13 @@ class OrganizationDatabaseRepository(
         }
     }
 
-    override suspend fun list(): List<Organization> =
-        transactionManager.suspendTransaction {
-            Organizations
-                .selectAll()
-                .map(Organizations::toOrganization)
-        }
-
     override suspend fun get(id: Uuid): Organization? =
         transactionManager.suspendTransaction {
             Organizations
                 .selectAll()
                 .where { Organizations.id eq id }
                 .map(Organizations::toOrganization)
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun create(payload: CreateOrganizationPayload): Organization? =
@@ -42,6 +35,6 @@ class OrganizationDatabaseRepository(
             Organizations.insert {
                 it[name] = payload.name
             }
-        }.resultedValues?.map(Organizations::toOrganization)?.singleOrNull()
+        }.resultedValues?.map(Organizations::toOrganization)?.firstOrNull()
 
 }

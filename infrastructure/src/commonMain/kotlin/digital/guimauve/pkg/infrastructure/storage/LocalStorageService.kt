@@ -7,15 +7,22 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
 
-class LocalStorageService : StorageService {
+class LocalStorageService(
+    private val localFolder: String = DEFAULT_FOLDER,
+) : StorageService {
 
-    private val localFolder = "pkg_data"
+    companion object {
+
+        const val DEFAULT_FOLDER = "pkg_data"
+
+    }
 
     override suspend fun signUrl(path: String): String =
         File(File(localFolder), path).absolutePath
 
     override suspend fun uploadStream(file: FileFromStream, path: String): String? =
         withContext(Dispatchers.IO) {
+            requireSafeStorageKey(path)
             val localFile = File(File(localFolder), path)
             localFile.parentFile.mkdirs()
             localFile.outputStream().use { output ->

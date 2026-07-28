@@ -45,9 +45,8 @@ fun Route.pypiRoutes(dependencies: PyPiRoutesDependencies) = with(dependencies) 
 
     post("/pypi") {
         call.requireUser(getUserUseCase)
-        call.receiveMultipart().forEachPart { part ->
-            println(part.name) // TODO: store the uploaded distribution
-        }
+        // TODO: store the uploaded distribution
+        call.receiveMultipart().forEachPart { it.dispose() }
         call.respond(HttpStatusCode.NoContent)
     }
 }

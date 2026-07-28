@@ -72,4 +72,27 @@ class ParseMavenPathUseCaseTest {
         }
     }
 
+    /**
+     * A segment is decoded only after the path has been split, so `%2e%2e%2f` arrives as `../`
+     * inside one segment. Any of these reaching the storage key would escape its root.
+     */
+    @Test
+    fun testTraversingSegmentsAreRefused() {
+        val usecase = ParseMavenPathUseCaseImpl()
+        val traversing = listOf(
+            listOf("digital", "guimauve", "pkg", "1.0.0", "../../pkg.jar"),
+            listOf("digital", "guimauve", "pkg", "1.0.0", ".."),
+            listOf("digital", "guimauve", "pkg", "1.0.0", "."),
+            listOf("digital", "guimauve", "pkg", "1.0.0", ""),
+            listOf("digital", "guimauve", "pkg", "1.0.0", "..\\..\\pkg.jar"),
+            listOf("digital", "guimauve", "pkg", "1.0.0", "/etc/passwd"),
+            listOf("digital", "..", "pkg", "1.0.0", "pkg-1.0.0.jar"),
+        )
+        traversing.forEach { segments ->
+            assertFailsWith(InvalidMavenPathException::class, "accepted $segments") {
+                usecase.invoke(segments)
+            }
+        }
+    }
+
 }

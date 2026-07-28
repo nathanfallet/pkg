@@ -28,7 +28,7 @@ class ApplicationTest {
 
     @Test
     fun testStartup() = withApplication {
-        val response = client.get("/api/v1/organizations")
+        val response = client.get("/healthz")
         assertEquals(HttpStatusCode.OK, response.status)
     }
 
@@ -43,6 +43,7 @@ class ApplicationTest {
         val packageId = "00000000-0000-4000-8000-000000000003"
         val versionId = "00000000-0000-4000-8000-000000000004"
         val paths = listOf(
+            "/api/v1/organizations",
             "/api/v1/organizations/$organizationId",
             "/api/v1/organizations/$organizationId/users",
             "/api/v1/organizations/$organizationId/users/$userId",

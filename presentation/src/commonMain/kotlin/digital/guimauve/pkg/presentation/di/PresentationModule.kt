@@ -20,14 +20,18 @@ val presentationModule = module {
     single { HealthRoutesDependencies(get()) }
 
     // API routes
-    single { OrganizationsRoutesDependencies(get(), get(), get()) }
+    single { OrganizationsRoutesDependencies(get(), get()) }
     single { UsersRoutesDependencies(get(), get(), get(), get()) }
     single { PackagesRoutesDependencies(get(), get(), get(), get()) }
     single { PackageVersionsRoutesDependencies(get(), get(), get(), get(), get(), get()) }
 
     // Dashboard routes
     single { AuthRoutesDependencies(get(), get()) }
-    single { DashboardRoutesDependencies(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single {
+        DashboardRoutesDependencies(
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
+        )
+    }
 
     // Package registry routes
     single {

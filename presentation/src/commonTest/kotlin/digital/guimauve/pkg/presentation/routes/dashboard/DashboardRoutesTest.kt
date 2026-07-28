@@ -7,6 +7,8 @@ import digital.guimauve.pkg.domain.usecases.packages.GetPackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.ListPackagesUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.GetPackageVersionUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.ListPackageVersionsUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.files.DownloadFileUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetPackageVersionFileByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.ListPackageVersionFilesUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserInOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
@@ -54,6 +56,8 @@ class DashboardRoutesTest {
         val listPackageVersionsUseCase = mockk<ListPackageVersionsUseCase>()
         val getPackageVersionUseCase = mockk<GetPackageVersionUseCase>()
         val listPackageVersionFilesUseCase = mockk<ListPackageVersionFilesUseCase>()
+        val getPackageVersionFileByNameUseCase = mockk<GetPackageVersionFileByNameUseCase>()
+        val downloadFileUseCase = mockk<DownloadFileUseCase>()
         val listUsersUseCase = mockk<ListUsersUseCase>()
         val getUserInOrganizationUseCase = mockk<GetUserInOrganizationUseCase>()
         val getOrganizationUseCase = mockk<GetOrganizationUseCase>()
@@ -72,6 +76,8 @@ class DashboardRoutesTest {
                             listPackageVersionsUseCase = mocks.listPackageVersionsUseCase,
                             getPackageVersionUseCase = mocks.getPackageVersionUseCase,
                             listPackageVersionFilesUseCase = mocks.listPackageVersionFilesUseCase,
+                            getPackageVersionFileByNameUseCase = mocks.getPackageVersionFileByNameUseCase,
+                            downloadFileUseCase = mocks.downloadFileUseCase,
                             listUsersUseCase = mocks.listUsersUseCase,
                             getUserInOrganizationUseCase = mocks.getUserInOrganizationUseCase,
                             getOrganizationUseCase = mocks.getOrganizationUseCase,
@@ -184,6 +190,36 @@ class DashboardRoutesTest {
             assertContains(this, "library-1.0.0.jar")
             assertContains(this, "2.0 KB")
         }
+    }
+
+    /**
+     * The download button of the version page has to resolve to a route that actually serves bytes.
+     */
+    @Test
+    fun testDownloadFile() = testApplication {
+        val mocks = Mocks()
+        val auth = signedIn(mocks)
+        coEvery {
+            mocks.getPackageUseCase(RoutesTestHelper.TEST_PACKAGE_ID, RoutesTestHelper.TEST_ORGANIZATION_ID)
+        } returns RoutesTestHelper.testPackage
+        coEvery {
+            mocks.getPackageVersionUseCase(RoutesTestHelper.TEST_VERSION_ID, RoutesTestHelper.TEST_PACKAGE_ID)
+        } returns version
+        coEvery {
+            mocks.getPackageVersionFileByNameUseCase("library-1.0.0.jar", RoutesTestHelper.TEST_VERSION_ID)
+        } returns file
+        coEvery { mocks.downloadFileUseCase(file) } returns "jar!".toByteArray()
+        configureApp(mocks)
+
+        val response = client.get(
+            "/packages/${RoutesTestHelper.TEST_PACKAGE_ID}" +
+                    "/versions/${RoutesTestHelper.TEST_VERSION_ID}/files/library-1.0.0.jar",
+            auth
+        )
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("jar!", response.bodyAsText())
+        assertContains(response.headers[HttpHeaders.ContentDisposition].orEmpty(), "library-1.0.0.jar")
     }
 
     @Test

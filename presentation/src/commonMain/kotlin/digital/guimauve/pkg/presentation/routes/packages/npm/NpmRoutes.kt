@@ -38,8 +38,8 @@ fun Route.npmRoutes(dependencies: NpmRoutesDependencies) = with(dependencies) {
 
     put("/npm/{packageName}") {
         call.requireUser(getUserUseCase)
-        val payload = call.receive<NpmPackage>()
-        println(payload) // TODO: publish the tarballs the payload carries
+        // TODO: publish the tarballs the payload carries
+        call.receive<NpmPackage>()
         call.respond(HttpStatusCode.NoContent)
     }
 

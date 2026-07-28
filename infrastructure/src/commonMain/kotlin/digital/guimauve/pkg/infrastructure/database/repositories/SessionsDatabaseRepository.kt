@@ -22,7 +22,7 @@ class SessionsDatabaseRepository(
                 .selectAll()
                 .where { Sessions.id eq id }
                 .map { it[Sessions.value] }
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun set(id: String, value: String) {

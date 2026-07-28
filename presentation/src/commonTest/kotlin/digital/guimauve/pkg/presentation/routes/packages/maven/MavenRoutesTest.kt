@@ -27,6 +27,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -107,8 +108,12 @@ class MavenRoutesTest {
         val response = client.get(artifactPath)
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals("application/java-archive", response.contentType()?.withoutParameters()?.toString())
         assertEquals("jar!", response.bodyAsText())
+        // The declared type of an artifact comes from whoever published it, so it is never replayed:
+        // a `text/html` upload would otherwise run on this origin.
+        assertEquals(ContentType.Application.OctetStream, response.contentType()?.withoutParameters())
+        assertEquals("nosniff", response.headers["X-Content-Type-Options"])
+        assertContains(response.headers[HttpHeaders.ContentDisposition].orEmpty(), "library-1.0.0.jar")
     }
 
     @Test

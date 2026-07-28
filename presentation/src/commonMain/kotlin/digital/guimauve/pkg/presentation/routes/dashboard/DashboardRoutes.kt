@@ -3,6 +3,7 @@ package digital.guimauve.pkg.presentation.routes.dashboard
 import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.PackageNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.PackageVersionNotFoundException
+import digital.guimauve.pkg.domain.exceptions.packages.versions.files.PackageVersionFileNotFoundException
 import digital.guimauve.pkg.domain.exceptions.users.UserNotFoundException
 import digital.guimauve.pkg.domain.models.organizations.Organization
 import digital.guimauve.pkg.domain.models.users.User
@@ -11,10 +12,13 @@ import digital.guimauve.pkg.domain.usecases.packages.GetPackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.ListPackagesUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.GetPackageVersionUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.ListPackageVersionsUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.files.DownloadFileUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetPackageVersionFileByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.ListPackageVersionFilesUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserInOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.domain.usecases.users.ListUsersUseCase
+import digital.guimauve.pkg.presentation.extensions.respondArtifact
 import digital.guimauve.pkg.presentation.extensions.respondView
 import digital.guimauve.pkg.presentation.extensions.userOrNull
 import digital.guimauve.pkg.presentation.mappers.organizations.toOrganizationView
@@ -37,6 +41,8 @@ data class DashboardRoutesDependencies(
     val listPackageVersionsUseCase: ListPackageVersionsUseCase,
     val getPackageVersionUseCase: GetPackageVersionUseCase,
     val listPackageVersionFilesUseCase: ListPackageVersionFilesUseCase,
+    val getPackageVersionFileByNameUseCase: GetPackageVersionFileByNameUseCase,
+    val downloadFileUseCase: DownloadFileUseCase,
     val listUsersUseCase: ListUsersUseCase,
     val getUserInOrganizationUseCase: GetUserInOrganizationUseCase,
     val getOrganizationUseCase: GetOrganizationUseCase,
@@ -112,7 +118,7 @@ fun Route.dashboardRoutes(dependencies: DashboardRoutesDependencies) = with(depe
         val version = getPackageVersionUseCase(versionId, pkg.id) ?: throw PackageVersionNotFoundException()
         val files = listPackageVersionFilesUseCase(version.id)
             .sortedBy { it.name }
-            .map { it.toPackageVersionFileView() }
+            .map { it.toPackageVersionFileView(pkg.id) }
         call.respondView(
             "public/packages/versions/detail.ftl",
             PackageVersionPageView(
@@ -122,6 +128,20 @@ fun Route.dashboardRoutes(dependencies: DashboardRoutesDependencies) = with(depe
                 files
             )
         )
+    }
+
+    // What the download button of the version page points at. It used to link the raw storage key,
+    // which matches no route.
+    get("/packages/{packageId}/versions/{versionId}/files/{fileName}") {
+        val context = dashboardContext(dependencies) ?: return@get
+        val packageId = uuidParameter("packageId") ?: throw PackageNotFoundException()
+        val versionId = uuidParameter("versionId") ?: throw PackageVersionNotFoundException()
+        val pkg = getPackageUseCase(packageId, context.organization.id) ?: throw PackageNotFoundException()
+        val version = getPackageVersionUseCase(versionId, pkg.id) ?: throw PackageVersionNotFoundException()
+        val fileName = call.parameters["fileName"] ?: throw PackageVersionFileNotFoundException()
+        val file = getPackageVersionFileByNameUseCase(fileName, version.id)
+            ?: throw PackageVersionFileNotFoundException()
+        call.respondArtifact(file.name, downloadFileUseCase(file))
     }
 
     get("/users") {

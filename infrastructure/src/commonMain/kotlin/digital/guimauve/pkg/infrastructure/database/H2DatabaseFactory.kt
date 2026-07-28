@@ -10,7 +10,7 @@ class H2DatabaseFactory(
 ) : DatabaseFactory {
 
     private val db: Database by lazy {
-        Database.connect("jdbc:h2:mem:${'$'}{config.name};DB_CLOSE_DELAY=-1;", "org.h2.Driver")
+        Database.connect("jdbc:h2:mem:${config.name};DB_CLOSE_DELAY=-1;", "org.h2.Driver")
     }
 
     override fun getDatabase(): Database = db

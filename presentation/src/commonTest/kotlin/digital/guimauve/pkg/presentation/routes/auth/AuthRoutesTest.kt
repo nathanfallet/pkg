@@ -92,18 +92,55 @@ class AuthRoutesTest {
         assertContains(response.bodyAsText(), "auth_invalid_credentials")
     }
 
-    /**
-     * A `?redirect=` pointing at another host must not be honoured.
-     */
     @Test
-    fun testLogoutIgnoresForeignRedirect() = testApplication {
+    fun testLoginRefusesAMalformedAddress() = testApplication {
         val mocks = Mocks()
         configureApp(mocks)
 
-        val response = client.config { followRedirects = false }.get("/auth/logout?redirect=//evil.example.com")
+        val response = client.submitForm(
+            url = "/auth/login",
+            formParameters = parameters {
+                append("email", "not-an-address")
+                append("password", "hunter2")
+            }
+        )
 
-        assertEquals(HttpStatusCode.Found, response.status)
-        assertEquals("/", response.headers[HttpHeaders.Location])
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertContains(response.bodyAsText(), "auth_email_regex")
+    }
+
+    /**
+     * A `?redirect=` pointing at another host must not be honoured, in any of the shapes a browser
+     * resolves back to an authority: `//host`, `/\host`, and anything with a stripped control
+     * character in between.
+     */
+    @Test
+    fun testForeignRedirectsAreIgnored() = testApplication {
+        val mocks = Mocks()
+        configureApp(mocks)
+        val client = client.config { followRedirects = false }
+
+        listOf(
+            "//evil.example.com",
+            "/\\evil.example.com",
+            "/%09/evil.example.com",
+            "/%0d/evil.example.com",
+            "https://evil.example.com",
+        ).forEach { target ->
+            val response = client.get("/auth/logout?redirect=$target")
+            assertEquals(HttpStatusCode.Found, response.status, "unexpected status for $target")
+            assertEquals("/", response.headers[HttpHeaders.Location], "honoured $target")
+        }
+    }
+
+    @Test
+    fun testSameSiteRedirectIsHonoured() = testApplication {
+        val mocks = Mocks()
+        configureApp(mocks)
+
+        val response = client.config { followRedirects = false }.get("/auth/logout?redirect=/packages")
+
+        assertEquals("/packages", response.headers[HttpHeaders.Location])
     }
 
 }

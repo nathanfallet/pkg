@@ -67,6 +67,11 @@ kotlin {
         }
     }
     js {
+        // `PackageVersionFile.size` is a Long, which only exports to javascript as a bigint.
+        compilerOptions {
+            target.set("es2015")
+            freeCompilerArgs.add("-Xes-long-as-bigint")
+        }
         generateTypeScriptDefinitions()
         binaries.library()
         nodejs()
@@ -86,12 +91,6 @@ kotlin {
                 api(libs.kotlinx.serialization.json)
                 api(libs.kotlinx.datetime)
                 api(libs.ktor.resources)
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.tests.mockk)
             }
         }
     }

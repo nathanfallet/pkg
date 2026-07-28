@@ -6,7 +6,6 @@ import kotlin.uuid.Uuid
 
 interface OrganizationsRepository {
 
-    suspend fun list(): List<Organization>
     suspend fun get(id: Uuid): Organization?
     suspend fun create(payload: CreateOrganizationPayload): Organization?
 

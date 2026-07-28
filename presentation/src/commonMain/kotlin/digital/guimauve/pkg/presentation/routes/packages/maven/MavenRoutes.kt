@@ -19,6 +19,7 @@ import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetLatestPac
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetPackageVersionFileByNameUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.presentation.extensions.requireUser
+import digital.guimauve.pkg.presentation.extensions.respondArtifact
 import digital.guimauve.pkg.presentation.extensions.userOrNull
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -57,7 +58,7 @@ fun Route.mavenRoutes(dependencies: MavenRoutesDependencies) = with(dependencies
         val file = version?.let { getPackageVersionFileByNameUseCase(mavenPath.filename, it.id) }
             ?: getLatestPackageVersionFileUseCase(mavenPath.filename, pkg.id)
             ?: throw PackageVersionFileNotFoundException()
-        call.respondBytes(downloadFileUseCase(file), ContentType.parse(file.contentType))
+        call.respondArtifact(file.name, downloadFileUseCase(file))
     }
 
     put("/maven2/{path...}") {
@@ -71,13 +72,16 @@ fun Route.mavenRoutes(dependencies: MavenRoutesDependencies) = with(dependencies
 
         val contentType = call.request.contentType()
             .takeIf { it != ContentType.Any } ?: ContentType.Application.OctetStream
+        // A chunked upload carries no length. Storing it as 0 would put an empty object in S3 and
+        // record a 0 byte artifact, while still answering success.
+        val contentLength = call.request.contentLength() ?: throw FileNotUploadedException()
         createPackageVersionFileUseCase(
             CreatePackageVersionFilePayload(mavenPath.filename, pkg, version),
             version.id,
             FileFromStream(
                 call.receiveStream(),
                 contentType.toString(),
-                call.request.contentLength() ?: 0
+                contentLength
             )
         ) ?: throw FileNotUploadedException()
         // 204, which is what the previous router answered and what maven clients expect here.

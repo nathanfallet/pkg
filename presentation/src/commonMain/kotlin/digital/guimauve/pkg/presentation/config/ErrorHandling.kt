@@ -24,6 +24,7 @@ import digital.guimauve.pkg.presentation.views.ErrorPageView
 import digital.guimauve.pkg.presentation.views.LayoutView
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -113,9 +114,14 @@ fun Application.configureErrorHandling() {
             call.fail(HttpStatusCode.NotFound, "storage_file_not_found")
         }
 
+        // Malformed request bodies and path parameters, which Ktor wraps for us
+        exception<BadRequestException> { call, _ ->
+            call.fail(HttpStatusCode.BadRequest, "error_body_invalid")
+        }
+
         // Generic (500)
         exception<Throwable> { call, cause ->
-            cause.printStackTrace() // for debugging purposes
+            call.application.log.error("Unhandled failure on ${call.request.path()}", cause)
             call.fail(HttpStatusCode.InternalServerError, "error_internal")
         }
 

@@ -20,7 +20,9 @@ class ProxyStorageService(
 
         innerStorageService =
             if (useS3) S3StorageService(s3Region, s3Name, s3Key, s3Secret)
-            else LocalStorageService()
+            else LocalStorageService(
+                config.propertyOrNull("storage.path")?.getString() ?: LocalStorageService.DEFAULT_FOLDER
+            )
     }
 
     override suspend fun signUrl(path: String): String = innerStorageService.signUrl(path)

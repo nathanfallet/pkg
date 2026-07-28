@@ -61,7 +61,7 @@ val Application.infrastructureModule: Module
         // Repositories
         single<SessionsRepository> { SessionsDatabaseRepository(get()) }
         single<SessionStorage> { DatabaseSessionStorage(get()) }
-        single<OrganizationsRepository> { OrganizationDatabaseRepository(get()) }
+        single<OrganizationsRepository> { OrganizationsDatabaseRepository(get()) }
         single<UsersRepository> { UsersDatabaseRepository(get()) }
         single<PackagesRepository> { PackagesDatabaseRepository(get()) }
         single<PackageVersionsRepository> { PackageVersionsDatabaseRepository(get()) }

@@ -50,6 +50,7 @@ class S3StorageService(
 
     override suspend fun uploadStream(file: FileFromStream, path: String): String? =
         withContext(Dispatchers.IO) {
+            requireSafeStorageKey(path)
             S3Client.builder()
                 .region(getRegion())
                 .credentialsProvider(getCredentials())

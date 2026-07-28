@@ -43,7 +43,7 @@ class PackageVersionFilesDatabaseRepository(
                             (PackageVersionFiles.versionId eq versionId)
                 }
                 .map(PackageVersionFiles::toPackageVersionFile)
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun getLatestByName(name: String, packageId: Uuid): PackageVersionFile? =
@@ -58,7 +58,7 @@ class PackageVersionFilesDatabaseRepository(
                 .orderBy(PackageVersions.publishedAt to SortOrder.DESC)
                 .limit(1)
                 .map(PackageVersionFiles::toPackageVersionFile)
-                .singleOrNull()
+                .firstOrNull()
         }
 
     override suspend fun create(
@@ -74,6 +74,6 @@ class PackageVersionFilesDatabaseRepository(
             it[PackageVersionFiles.contentType] = contentType
             it[PackageVersionFiles.size] = size
         }
-    }.resultedValues?.map(PackageVersionFiles::toPackageVersionFile)?.singleOrNull()
+    }.resultedValues?.map(PackageVersionFiles::toPackageVersionFile)?.firstOrNull()
 
 }

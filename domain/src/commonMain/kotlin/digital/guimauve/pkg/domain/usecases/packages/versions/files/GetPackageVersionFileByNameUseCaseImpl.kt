@@ -7,6 +7,6 @@ import kotlin.uuid.Uuid
 class GetPackageVersionFileByNameUseCaseImpl(
     private val repository: PackageVersionFilesRepository,
 ) : GetPackageVersionFileByNameUseCase {
-    override suspend fun invoke(name: String, packageId: Uuid): PackageVersionFile? =
-        repository.getByName(name, packageId)
+    override suspend fun invoke(name: String, versionId: Uuid): PackageVersionFile? =
+        repository.getByName(name, versionId)
 }

@@ -4,8 +4,6 @@ import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCaseImpl
-import digital.guimauve.pkg.domain.usecases.organizations.ListOrganizationsUseCase
-import digital.guimauve.pkg.domain.usecases.organizations.ListOrganizationsUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.packages.*
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCaseImpl
@@ -22,7 +20,6 @@ val domainModule = module {
     single<LoginUseCase> { LoginUseCaseImpl(get(), get()) }
 
     // Organizations
-    single<ListOrganizationsUseCase> { ListOrganizationsUseCaseImpl(get()) }
     single<GetOrganizationUseCase> { GetOrganizationUseCaseImpl(get()) }
 
     // Users
