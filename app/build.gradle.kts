@@ -36,10 +36,10 @@ ktor {
 }
 
 dependencies {
-    implementation(projects.backend)
-    //implementation(projects.domain)
-    //implementation(projects.infrastructure)
-    //implementation(projects.presentation)
+    implementation(projects.api)
+    implementation(projects.domain)
+    implementation(projects.infrastructure)
+    implementation(projects.presentation)
 
     implementation(libs.logback.core)
     implementation(libs.logback.classic)

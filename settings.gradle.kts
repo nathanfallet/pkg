@@ -19,6 +19,8 @@ dependencyResolutionManagement {
 }
 
 includeBuild("gradle-plugin")
-include(":commons")
-include(":backend")
+include(":api")
+include(":domain")
+include(":infrastructure")
+include(":presentation")
 include(":app")

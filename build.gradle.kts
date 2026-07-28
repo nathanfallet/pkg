@@ -23,7 +23,9 @@ allprojects {
 }
 
 dependencies {
+    kover(projects.api)
+    kover(projects.domain)
+    kover(projects.infrastructure)
+    kover(projects.presentation)
     kover(projects.app)
-    kover(projects.backend)
-    kover(projects.commons)
 }

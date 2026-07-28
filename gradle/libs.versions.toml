@@ -13,6 +13,7 @@ h2 = "2.3.232"
 jsoup = "1.16.2"
 kotlinx-coroutines = "1.9.0"
 kotlinx-datetime = "0.7.1"
+kotlinx-serialization = "1.9.0"
 ktor = "3.4.0"
 koin = "4.1.0"
 logback = "0.9.30"
@@ -37,6 +38,8 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 
 # Others shared with the clients
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 # Exposed
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
@@ -90,34 +93,10 @@ exposed = [
     "exposed-kotlin-datetime",
 ]
 
-ktor-server-api = [
-    "ktor-server-core",
-    "ktor-server-resources",
-    "ktor-server-netty",
-    "ktor-server-call-logging",
-    "ktor-server-status-pages",
-    "ktor-server-content-negotiation",
-    "ktor-server-auto-head-response",
-    "ktor-server-sessions",
-    "ktor-server-auth-jwt",
-    "ktor-server-freemarker",
-    "ktor-server-websockets",
-    "ktor-server-cors",
-    "ktor-serialization-kotlinx-json",
-]
-
 ktor-server-tests = [
     "ktor-server-test-host",
     "ktor-client-core",
     "ktor-client-content-negotiation",
-]
-
-ktor-client-api = [
-    "ktor-client-core",
-    "ktor-client-apache",
-    "ktor-client-jetty",
-    "ktor-client-content-negotiation",
-    "ktor-serialization-kotlinx-json",
 ]
 
 ktor-client-tests = [
