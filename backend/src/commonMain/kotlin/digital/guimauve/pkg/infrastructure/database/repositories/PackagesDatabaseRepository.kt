@@ -1,48 +1,47 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
-import dev.kaccelero.database.IDatabase
-import dev.kaccelero.database.eq
-import dev.kaccelero.database.set
-import dev.kaccelero.models.IContext
 import digital.guimauve.pkg.domain.repositories.PackagesRepository
+import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Packages
 import digital.guimauve.pkg.models.packages.CreatePackagePayload
 import digital.guimauve.pkg.models.packages.Package
 import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.UpdatePackagePayload
-import kotlinx.datetime.Clock
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.*
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class PackagesDatabaseRepository(
-    private val database: IDatabase,
+    private val transactionManager: TransactionManager,
 ) : PackagesRepository {
 
     init {
-        database.transaction {
+        transactionManager.transaction {
             SchemaUtils.create(Packages)
         }
     }
 
-    override suspend fun list(parentId: Uuid, context: IContext?): List<Package> =
-        database.suspendedTransaction {
+    override suspend fun list(organizationId: Uuid): List<Package> =
+        transactionManager.suspendTransaction {
             Packages
                 .selectAll()
-                .where { Packages.organizationId eq parentId }
+                .where { Packages.organizationId eq organizationId }
                 .map(Packages::toPackage)
         }
 
-    override suspend fun get(id: Uuid, parentId: Uuid, context: IContext?): Package? =
-        database.suspendedTransaction {
+    override suspend fun get(id: Uuid, organizationId: Uuid): Package? =
+        transactionManager.suspendTransaction {
             Packages
                 .selectAll()
-                .where { Packages.id eq id and (Packages.organizationId eq parentId) }
+                .where { Packages.id eq id and (Packages.organizationId eq organizationId) }
                 .map(Packages::toPackage)
                 .singleOrNull()
         }
 
     override suspend fun getByName(name: String, format: PackageFormat): Package? =
-        database.suspendedTransaction {
+        transactionManager.suspendTransaction {
             Packages
                 .selectAll()
                 .where { Packages.name eq name and (Packages.format eq format) }
@@ -50,27 +49,31 @@ class PackagesDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreatePackagePayload, parentId: Uuid, context: IContext?): Package? =
-        database.suspendedTransaction {
+    override suspend fun create(payload: CreatePackagePayload, organizationId: Uuid): Package? =
+        transactionManager.suspendTransaction {
             Packages.insert {
                 it[name] = payload.name
                 it[format] = payload.format
-                it[organizationId] = parentId
+                it[Packages.organizationId] = organizationId
                 it[isPublic] = payload.isPublic
                 it[createdAt] = Clock.System.now()
             }
         }.resultedValues?.map(Packages::toPackage)?.singleOrNull()
 
-    override suspend fun update(id: Uuid, payload: UpdatePackagePayload, parentId: Uuid, context: IContext?): Boolean =
-        database.suspendedTransaction {
-            Packages.update({ Packages.id eq id and (Packages.organizationId eq parentId) }) {
+    override suspend fun update(id: Uuid, payload: UpdatePackagePayload, organizationId: Uuid): Boolean =
+        transactionManager.suspendTransaction {
+            Packages.update({
+                Packages.id eq id and (Packages.organizationId eq organizationId)
+            }) {
                 it[isPublic] = payload.isPublic
             }
         } == 1
 
-    override suspend fun delete(id: Uuid, parentId: Uuid, context: IContext?): Boolean =
-        database.suspendedTransaction {
-            Packages.deleteWhere { Packages.id eq id and (Packages.organizationId eq parentId) }
+    override suspend fun delete(id: Uuid, organizationId: Uuid): Boolean =
+        transactionManager.suspendTransaction {
+            Packages.deleteWhere {
+                Packages.id eq id and (Packages.organizationId eq organizationId)
+            }
         } == 1
 
 }

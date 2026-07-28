@@ -1,9 +1,9 @@
 package digital.guimauve.pkg.api.responses.packages.versions
 
 import digital.guimauve.zodable.Zodable
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Zodable

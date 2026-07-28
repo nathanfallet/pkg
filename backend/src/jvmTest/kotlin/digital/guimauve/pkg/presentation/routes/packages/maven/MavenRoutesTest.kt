@@ -26,9 +26,9 @@ import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.datetime.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class MavenRoutesTest {

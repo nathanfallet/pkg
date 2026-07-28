@@ -2,6 +2,7 @@ package digital.guimauve.pkg.presentation.di
 
 import digital.guimauve.pkg.presentation.routes.auth.AuthRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.dashboard.DashboardRoutesDependencies
+import digital.guimauve.pkg.presentation.routes.health.HealthRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.organizations.OrganizationsRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.packages.PackagesRoutesDependencies
 import digital.guimauve.pkg.presentation.routes.packages.maven.MavenRoutesDependencies
@@ -15,6 +16,9 @@ import org.koin.dsl.module
  * Koin module for presentation layer dependencies.
  */
 val presentationModule = module {
+    // Probes
+    single { HealthRoutesDependencies(get()) }
+
     // API routes
     single { OrganizationsRoutesDependencies(get(), get(), get()) }
     single { UsersRoutesDependencies(get(), get(), get(), get()) }

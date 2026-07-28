@@ -11,7 +11,7 @@ class LocalStorageService : IStorageService {
         return File(File(localFolder), path).absolutePath
     }
 
-    override fun uploadStream(file: FileContext, path: String): String? {
+    override fun uploadStream(file: FileFromStream, path: String): String? {
         val localFile = File(File(localFolder), path)
         localFile.parentFile.mkdirs()
         localFile.outputStream().use { output ->

@@ -1,52 +1,60 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
-import dev.kaccelero.database.IDatabase
-import dev.kaccelero.database.eq
-import dev.kaccelero.database.set
-import dev.kaccelero.models.IContext
 import digital.guimauve.pkg.domain.repositories.PackageVersionFilesRepository
+import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersionFiles
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersions
 import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
 import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
-import digital.guimauve.pkg.services.storage.FileContext
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.v1.core.JoinType
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.uuid.Uuid
 
 class PackageVersionFilesDatabaseRepository(
-    private val database: IDatabase,
+    private val transactionManager: TransactionManager,
 ) : PackageVersionFilesRepository {
 
     init {
-        database.transaction {
+        transactionManager.transaction {
             SchemaUtils.create(PackageVersionFiles)
         }
     }
 
-    override suspend fun list(parentId: Uuid, context: IContext?): List<PackageVersionFile> =
-        database.suspendedTransaction {
+    override suspend fun list(versionId: Uuid): List<PackageVersionFile> =
+        transactionManager.suspendTransaction {
             PackageVersionFiles
                 .selectAll()
-                .where { PackageVersionFiles.versionId eq parentId }
+                .where { PackageVersionFiles.versionId eq versionId }
                 .orderBy(PackageVersionFiles.name to SortOrder.ASC)
                 .map(PackageVersionFiles::toPackageVersionFile)
         }
 
-    override suspend fun getByName(name: String, packageId: Uuid): PackageVersionFile? =
-        database.suspendedTransaction {
+    override suspend fun getByName(name: String, versionId: Uuid): PackageVersionFile? =
+        transactionManager.suspendTransaction {
             PackageVersionFiles
                 .selectAll()
-                .where { PackageVersionFiles.name eq name and (PackageVersionFiles.versionId eq packageId) }
+                .where {
+                    PackageVersionFiles.name eq name and
+                            (PackageVersionFiles.versionId eq versionId)
+                }
                 .map(PackageVersionFiles::toPackageVersionFile)
                 .singleOrNull()
         }
 
     override suspend fun getLatestByName(name: String, packageId: Uuid): PackageVersionFile? =
-        database.suspendedTransaction {
+        transactionManager.suspendTransaction {
             PackageVersionFiles
                 .join(PackageVersions, JoinType.INNER, PackageVersionFiles.versionId, PackageVersions.id)
                 .selectAll()
-                .where { PackageVersionFiles.name eq name and (PackageVersions.packageId eq packageId) }
+                .where {
+                    PackageVersionFiles.name eq name and
+                            (PackageVersions.packageId eq packageId)
+                }
                 .orderBy(PackageVersions.publishedAt to SortOrder.DESC)
                 .limit(1)
                 .map(PackageVersionFiles::toPackageVersionFile)
@@ -55,19 +63,17 @@ class PackageVersionFilesDatabaseRepository(
 
     override suspend fun create(
         payload: CreatePackageVersionFilePayload,
-        parentId: Uuid,
-        context: IContext?,
-    ): PackageVersionFile? {
-        val fileContext = context as? FileContext ?: return null
-        return database.suspendedTransaction {
-            PackageVersionFiles.insert {
-                it[versionId] = parentId
-                it[name] = payload.name
-                it[path] = payload.path
-                it[contentType] = fileContext.contentType.toString()
-                it[size] = fileContext.contentLength
-            }
-        }.resultedValues?.map(PackageVersionFiles::toPackageVersionFile)?.singleOrNull()
-    }
+        versionId: Uuid,
+        contentType: String,
+        size: Long,
+    ): PackageVersionFile? = transactionManager.suspendTransaction {
+        PackageVersionFiles.insert {
+            it[PackageVersionFiles.versionId] = versionId
+            it[name] = payload.name
+            it[path] = payload.path
+            it[PackageVersionFiles.contentType] = contentType
+            it[PackageVersionFiles.size] = size
+        }
+    }.resultedValues?.map(PackageVersionFiles::toPackageVersionFile)?.singleOrNull()
 
 }

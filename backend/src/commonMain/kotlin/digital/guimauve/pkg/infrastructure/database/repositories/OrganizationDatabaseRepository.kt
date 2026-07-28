@@ -1,43 +1,44 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
-import dev.kaccelero.database.IDatabase
-import dev.kaccelero.models.IContext
 import digital.guimauve.pkg.domain.repositories.OrganizationsRepository
+import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Organizations
 import digital.guimauve.pkg.models.organizations.CreateOrganizationPayload
 import digital.guimauve.pkg.models.organizations.Organization
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.uuid.Uuid
 
 class OrganizationDatabaseRepository(
-    private val database: IDatabase,
+    private val transactionManager: TransactionManager,
 ) : OrganizationsRepository {
 
     init {
-        database.transaction {
+        transactionManager.transaction {
             SchemaUtils.create(Organizations)
         }
     }
 
-    override suspend fun list(context: IContext?): List<Organization> =
-        database.suspendedTransaction {
+    override suspend fun list(): List<Organization> =
+        transactionManager.suspendTransaction {
             Organizations
                 .selectAll()
                 .map(Organizations::toOrganization)
         }
 
-    override suspend fun get(id: Uuid, context: IContext?): Organization? =
-        database.suspendedTransaction {
+    override suspend fun get(id: Uuid): Organization? =
+        transactionManager.suspendTransaction {
             Organizations
                 .selectAll()
+                .where { Organizations.id eq id }
                 .map(Organizations::toOrganization)
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreateOrganizationPayload, context: IContext?): Organization? =
-        database.suspendedTransaction {
+    override suspend fun create(payload: CreateOrganizationPayload): Organization? =
+        transactionManager.suspendTransaction {
             Organizations.insert {
                 it[name] = payload.name
             }

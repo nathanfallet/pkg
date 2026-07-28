@@ -75,6 +75,20 @@ class ApplicationTest {
     }
 
     /**
+     * The paths the kubernetes probes read, see `helm/pkg/values.yaml`.
+     */
+    @Test
+    fun testProbes() = withApplication {
+        val alive = client.get("/healthz")
+        assertEquals(HttpStatusCode.OK, alive.status)
+        assertEquals("""{"alive":true}""", alive.bodyAsText())
+
+        val ready = client.get("/readyz")
+        assertEquals(HttpStatusCode.OK, ready.status)
+        assertEquals("""{"database":true}""", ready.bodyAsText())
+    }
+
+    /**
      * A browser gets the error page, anything else gets the error key as JSON.
      */
     @Test

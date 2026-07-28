@@ -42,7 +42,7 @@ class S3StorageService(
             return presigner.presignGetObject(presignRequest).url().toExternalForm()
         }
 
-    override fun uploadStream(file: FileContext, path: String): String? = S3Client.builder()
+    override fun uploadStream(file: FileFromStream, path: String): String? = S3Client.builder()
         .region(getRegion())
         .credentialsProvider(getCredentials())
         .overrideConfiguration { config ->

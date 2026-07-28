@@ -22,7 +22,9 @@ class ProxyStorageService(
     }
 
     override fun signUrl(path: String): String = innerStorageService.signUrl(path)
-    override fun uploadStream(file: FileContext, path: String): String? = innerStorageService.uploadStream(file, path)
+    override fun uploadStream(file: FileFromStream, path: String): String? =
+        innerStorageService.uploadStream(file, path)
+
     override fun downloadStream(path: String): InputStream? = innerStorageService.downloadStream(path)
 
 }

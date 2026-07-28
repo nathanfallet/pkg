@@ -1,6 +1,5 @@
 package digital.guimauve.pkg.presentation.config
 
-import dev.kaccelero.plugins.Health
 import io.ktor.server.application.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.request.*
@@ -13,5 +12,4 @@ fun Application.configureMonitoring() {
             call.request.path() != "/healthz" && call.request.path() != "/readyz"
         }
     }
-    install(Health)
 }

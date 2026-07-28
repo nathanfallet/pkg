@@ -18,9 +18,9 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.resources.*
 import io.ktor.server.sessions.*
-import kotlinx.datetime.Instant
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 /**

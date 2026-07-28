@@ -1,8 +1,8 @@
 package digital.guimauve.pkg.presentation.mappers
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 /**
  * Formats an instant for the dashboard. Everything is displayed in UTC: the dashboard has no

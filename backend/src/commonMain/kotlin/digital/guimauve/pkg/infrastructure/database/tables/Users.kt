@@ -1,11 +1,11 @@
 package digital.guimauve.pkg.infrastructure.database.tables
 
 import digital.guimauve.pkg.models.users.User
-import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.ResultRow
-import kotlin.uuid.toKotlinUuid
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.dao.id.UuidTable
 
-object Users : UUIDTable() {
+object Users : UuidTable() {
+
     val organizationId = uuid("organization_id").index()
     val email = varchar("email", 255).index()
     val password = varchar("password", 255)
@@ -14,9 +14,10 @@ object Users : UUIDTable() {
         row: ResultRow,
         includePassword: Boolean = false,
     ) = User(
-        row[id].value.toKotlinUuid(),
-        row[organizationId].toKotlinUuid(),
+        row[id].value,
+        row[organizationId],
         row[email],
         row[password].takeIf { includePassword },
     )
+
 }

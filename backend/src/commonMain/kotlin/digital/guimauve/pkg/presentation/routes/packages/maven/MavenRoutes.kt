@@ -19,7 +19,7 @@ import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
 import digital.guimauve.pkg.presentation.extensions.requireUser
 import digital.guimauve.pkg.presentation.extensions.userOrNull
-import digital.guimauve.pkg.services.storage.FileContext
+import digital.guimauve.pkg.services.storage.FileFromStream
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -77,7 +77,7 @@ fun Route.mavenRoutes(dependencies: MavenRoutesDependencies) = with(dependencies
             createPackageVersionFileUseCase(
                 CreatePackageVersionFilePayload(mavenPath.filename, pkg, version),
                 version.id,
-                FileContext(
+                FileFromStream(
                     call.receiveStream(),
                     contentType.takeIf { it != ContentType.Any } ?: ContentType.Application.OctetStream,
                     call.request.contentLength() ?: 0

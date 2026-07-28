@@ -1,39 +1,37 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
-import dev.kaccelero.database.IDatabase
-import dev.kaccelero.database.eq
-import dev.kaccelero.database.set
-import dev.kaccelero.models.IContext
 import digital.guimauve.pkg.domain.repositories.UsersRepository
+import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Users
 import digital.guimauve.pkg.models.users.CreateUserPayload
 import digital.guimauve.pkg.models.users.User
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.uuid.Uuid
 
 class UsersDatabaseRepository(
-    private val database: IDatabase,
+    private val transactionManager: TransactionManager,
 ) : UsersRepository {
 
     init {
-        database.transaction {
+        transactionManager.transaction {
             SchemaUtils.create(Users)
         }
     }
 
-    override suspend fun list(parentId: Uuid, context: IContext?): List<User> =
-        database.suspendedTransaction {
+    override suspend fun list(organizationId: Uuid): List<User> =
+        transactionManager.suspendTransaction {
             Users
                 .selectAll()
-                .where { Users.organizationId eq parentId }
+                .where { Users.organizationId eq organizationId }
                 .map(Users::toUser)
         }
 
     override suspend fun get(id: Uuid): User? =
-        database.suspendedTransaction {
+        transactionManager.suspendTransaction {
             Users
                 .selectAll()
                 .where { Users.id eq id }
@@ -41,17 +39,17 @@ class UsersDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun get(id: Uuid, parentId: Uuid, context: IContext?): User? =
-        database.suspendedTransaction {
+    override suspend fun get(id: Uuid, organizationId: Uuid): User? =
+        transactionManager.suspendTransaction {
             Users
                 .selectAll()
-                .where { Users.id eq id and (Users.organizationId eq parentId) }
+                .where { Users.id eq id and (Users.organizationId eq organizationId) }
                 .map(Users::toUser)
                 .singleOrNull()
         }
 
     override suspend fun getForEmail(email: String, includePassword: Boolean): User? =
-        database.suspendedTransaction {
+        transactionManager.suspendTransaction {
             Users
                 .selectAll()
                 .where { Users.email eq email }
@@ -59,10 +57,10 @@ class UsersDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreateUserPayload, parentId: Uuid, context: IContext?): User? =
-        database.suspendedTransaction {
+    override suspend fun create(payload: CreateUserPayload, organizationId: Uuid): User? =
+        transactionManager.suspendTransaction {
             Users.insert {
-                it[organizationId] = parentId
+                it[Users.organizationId] = organizationId
                 it[email] = payload.email
                 it[password] = payload.password
             }

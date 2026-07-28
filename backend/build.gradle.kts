@@ -53,7 +53,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":commons"))
-                api(libs.bundles.kaccelero.ktor)
+                api(libs.bundles.exposed)
+                api(libs.hikari)
                 api(libs.bundles.ktor.server.api)
                 api(libs.bundles.ktor.client.api)
                 api(libs.koin.core)

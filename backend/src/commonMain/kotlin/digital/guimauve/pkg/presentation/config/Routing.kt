@@ -2,6 +2,7 @@ package digital.guimauve.pkg.presentation.config
 
 import digital.guimauve.pkg.presentation.routes.auth.authRoutes
 import digital.guimauve.pkg.presentation.routes.dashboard.dashboardRoutes
+import digital.guimauve.pkg.presentation.routes.health.healthRoutes
 import digital.guimauve.pkg.presentation.routes.organizations.organizationsRoutes
 import digital.guimauve.pkg.presentation.routes.packages.maven.mavenRoutes
 import digital.guimauve.pkg.presentation.routes.packages.npm.npmRoutes
@@ -33,6 +34,9 @@ fun Application.configureRouting() {
         anyHost()
     }
     routing {
+        // Probes, which must answer without any authentication
+        healthRoutes(get())
+
         authenticate("api-jwt", optional = true) {
             // API
             organizationsRoutes(get())

@@ -84,8 +84,8 @@ kotlin {
         }
         val commonMain by getting {
             dependencies {
-                api(libs.kaccelero.routers.client)
                 api(libs.ktor.resources)
+                api(libs.kotlinx.datetime)
             }
         }
         val jvmTest by getting {

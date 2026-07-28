@@ -15,9 +15,9 @@ import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.datetime.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 class NpmRoutesTest {
 

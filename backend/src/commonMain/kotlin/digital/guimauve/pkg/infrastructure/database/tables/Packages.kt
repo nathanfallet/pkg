@@ -2,12 +2,12 @@ package digital.guimauve.pkg.infrastructure.database.tables
 
 import digital.guimauve.pkg.models.packages.Package
 import digital.guimauve.pkg.models.packages.PackageFormat
-import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
-import kotlin.uuid.toKotlinUuid
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.dao.id.UuidTable
+import org.jetbrains.exposed.v1.datetime.timestamp
 
-object Packages : UUIDTable() {
+object Packages : UuidTable() {
+
     val name = varchar("name", 255)
     val format = enumerationByName<PackageFormat>("format", 255)
     val organizationId = uuid("organization_id").index()
@@ -21,11 +21,12 @@ object Packages : UUIDTable() {
     fun toPackage(
         row: ResultRow,
     ) = Package(
-        row[id].value.toKotlinUuid(),
+        row[id].value,
         row[name],
         row[format],
-        row[organizationId].toKotlinUuid(),
+        row[organizationId],
         row[isPublic],
         row[createdAt],
     )
+
 }
