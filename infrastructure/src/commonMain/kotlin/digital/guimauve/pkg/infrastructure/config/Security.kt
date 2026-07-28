@@ -31,11 +31,10 @@ fun Application.configureSecurity() {
             }
         }
 
-        // The npm client, which sends the token it got from `npm login`
+        // The npm client, which sends the token from the `_authToken` of its `.npmrc`
         bearer("auth-bearer") {
-            authenticate {
-                // TODO: implement the npm web login flow
-                null
+            authenticate { credential ->
+                tokenService.verifyToken(credential.token)?.let { UserIdPrincipal(it.toString()) }
             }
         }
     }

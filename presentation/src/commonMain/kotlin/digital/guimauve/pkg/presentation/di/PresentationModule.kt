@@ -49,6 +49,10 @@ val presentationModule = module {
             get(),
         )
     }
-    single { NpmRoutesDependencies(get(), get(), get()) }
+    single {
+        NpmRoutesDependencies(
+            get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()
+        )
+    }
     single { PyPiRoutesDependencies(get(), get()) }
 }
