@@ -9,7 +9,11 @@ import kotlin.uuid.Uuid
 class GetOrCreatePackageVersionUseCaseImpl(
     private val repository: PackageVersionsRepository,
 ) : GetOrCreatePackageVersionUseCase {
-    override suspend fun invoke(name: String, packageId: Uuid, user: User): PackageVersion? =
-        repository.getByName(name, packageId)
-            ?: repository.create(CreatePackageVersionPayload(name, null), packageId, user.id)
+    override suspend fun invoke(
+        name: String,
+        packageId: Uuid,
+        user: User,
+        metadata: String?,
+    ): PackageVersion? = repository.getByName(name, packageId)
+        ?: repository.create(CreatePackageVersionPayload(name, metadata), packageId, user.id)
 }

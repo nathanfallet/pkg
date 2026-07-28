@@ -43,6 +43,21 @@ In your `.npmrc`:
 @organization-name:registry=https://pkg.guimauve.digital/npm/
 ```
 
+To publish, you also need a token:
+
+```bash
+npm login --auth-type=legacy --registry https://pkg.guimauve.digital/npm/
+```
+
+which writes it to your `.npmrc`:
+
+```ini
+//pkg.guimauve.digital/npm/:_authToken=...
+```
+
+Then `npm publish` and `npm install` work as usual. See [docs/npm.md](docs/npm.md) for what the
+registry implements, and what it does not.
+
 ### pypi
 
 In your `pip.conf` (to download packages):
