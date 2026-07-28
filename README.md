@@ -1,10 +1,10 @@
 # pkg
 
-[![License](https://img.shields.io/github/license/guimauvedigital/pkg)](LICENSE)
-[![Issues](https://img.shields.io/github/issues/guimauvedigital/pkg)]()
-[![Pull Requests](https://img.shields.io/github/issues-pr/guimauvedigital/pkg)]()
-[![Code Size](https://img.shields.io/github/languages/code-size/guimauvedigital/pkg)]()
-[![codecov](https://codecov.io/gh/guimauvedigital/pkg/graph/badge.svg?token=XZ7HrShgH3)](https://codecov.io/gh/guimauvedigital/pkg)
+[![License](https://img.shields.io/github/license/nathanfallet/pkg)](LICENSE)
+[![Issues](https://img.shields.io/github/issues/nathanfallet/pkg)]()
+[![Pull Requests](https://img.shields.io/github/issues-pr/nathanfallet/pkg)]()
+[![Code Size](https://img.shields.io/github/languages/code-size/nathanfallet/pkg)]()
+[![codecov](https://codecov.io/gh/nathanfallet/pkg/graph/badge.svg?token=XZ7HrShgH3)](https://codecov.io/gh/nathanfallet/pkg)
 
 An open source maven/npm/pypi package manager.
 

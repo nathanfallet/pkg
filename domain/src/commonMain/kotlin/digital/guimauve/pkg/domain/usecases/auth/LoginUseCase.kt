@@ -1,0 +1,8 @@
+package digital.guimauve.pkg.domain.usecases.auth
+
+import digital.guimauve.pkg.domain.models.auth.LoginPayload
+import digital.guimauve.pkg.domain.models.users.User
+
+interface LoginUseCase {
+    suspend operator fun invoke(input: LoginPayload): User?
+}
