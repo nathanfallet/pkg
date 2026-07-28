@@ -4,6 +4,7 @@ import digital.guimauve.pkg.domain.exceptions.packages.PackageNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.PackageVersionNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.files.FileNotUploadedException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.files.PackageVersionFileNotFoundException
+import digital.guimauve.pkg.domain.models.storage.FileFromStream
 import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
@@ -19,13 +20,10 @@ import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
 import digital.guimauve.pkg.presentation.extensions.requireUser
 import digital.guimauve.pkg.presentation.extensions.userOrNull
-import digital.guimauve.pkg.services.storage.FileFromStream
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * Dependencies required for the maven registry routes.
@@ -71,19 +69,17 @@ fun Route.mavenRoutes(dependencies: MavenRoutesDependencies) = with(dependencies
             ?: getLatestPackageVersionUseCase(pkg.id)
             ?: throw PackageVersionNotFoundException()
 
-        // Reading the uploaded artifact blocks, so it must not run on the event loop.
-        withContext(Dispatchers.IO) {
-            val contentType = call.request.contentType()
-            createPackageVersionFileUseCase(
-                CreatePackageVersionFilePayload(mavenPath.filename, pkg, version),
-                version.id,
-                FileFromStream(
-                    call.receiveStream(),
-                    contentType.takeIf { it != ContentType.Any } ?: ContentType.Application.OctetStream,
-                    call.request.contentLength() ?: 0
-                )
-            ) ?: throw FileNotUploadedException()
-        }
+        val contentType = call.request.contentType()
+            .takeIf { it != ContentType.Any } ?: ContentType.Application.OctetStream
+        createPackageVersionFileUseCase(
+            CreatePackageVersionFilePayload(mavenPath.filename, pkg, version),
+            version.id,
+            FileFromStream(
+                call.receiveStream(),
+                contentType.toString(),
+                call.request.contentLength() ?: 0
+            )
+        ) ?: throw FileNotUploadedException()
         // 204, which is what the previous router answered and what maven clients expect here.
         call.respond(HttpStatusCode.NoContent)
     }

@@ -2,18 +2,16 @@ package digital.guimauve.pkg.infrastructure.di
 
 import digital.guimauve.pkg.domain.repositories.*
 import digital.guimauve.pkg.domain.services.PasswordEncoderService
+import digital.guimauve.pkg.domain.services.StorageService
+import digital.guimauve.pkg.domain.services.TokenService
 import digital.guimauve.pkg.domain.services.TranslateService
 import digital.guimauve.pkg.infrastructure.bcrypt.BCryptPasswordEncoderService
 import digital.guimauve.pkg.infrastructure.database.*
 import digital.guimauve.pkg.infrastructure.database.repositories.*
 import digital.guimauve.pkg.infrastructure.i18n.PropertiesTranslateService
+import digital.guimauve.pkg.infrastructure.jwt.JwtTokenService
 import digital.guimauve.pkg.infrastructure.sessions.DatabaseSessionStorage
-import digital.guimauve.pkg.services.storage.IStorageService
-import digital.guimauve.pkg.services.storage.ProxyStorageService
-import digital.guimauve.pkg.services.tokens.IJWTService
-import digital.guimauve.pkg.services.tokens.ITokensService
-import digital.guimauve.pkg.services.tokens.JWTService
-import digital.guimauve.pkg.services.tokens.TokensService
+import digital.guimauve.pkg.infrastructure.storage.ProxyStorageService
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import org.koin.core.module.Module
@@ -47,17 +45,16 @@ val Application.infrastructureModule: Module
         // Services
         single<PasswordEncoderService> { BCryptPasswordEncoderService() }
         single<TranslateService> { PropertiesTranslateService() }
-        single<IJWTService> {
-            JWTService(
+        // The concrete type is bound too: the Ktor `jwt` provider needs its verifier.
+        single {
+            JwtTokenService(
                 environment.config.property("jwt.secret").getString(),
                 environment.config.property("jwt.issuer").getString(),
                 environment.config.property("jwt.audience").getString()
             )
         }
-        single<ITokensService> {
-            TokensService(get())
-        }
-        single<IStorageService> {
+        single<TokenService> { get<JwtTokenService>() }
+        single<StorageService> {
             ProxyStorageService(environment.config)
         }
 

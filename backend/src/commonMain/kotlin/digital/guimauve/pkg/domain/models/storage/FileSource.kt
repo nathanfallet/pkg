@@ -1,6 +1,5 @@
-package digital.guimauve.pkg.services.storage
+package digital.guimauve.pkg.domain.models.storage
 
-import io.ktor.http.*
 import java.io.InputStream
 import java.net.URL
 
@@ -9,7 +8,7 @@ import java.net.URL
  */
 sealed interface FileSource {
 
-    val contentType: ContentType
+    val contentType: String
 
 }
 
@@ -18,7 +17,7 @@ sealed interface FileSource {
  */
 class FileFromStream(
     val inputStream: InputStream,
-    override val contentType: ContentType,
+    override val contentType: String,
     val contentLength: Long,
 ) : FileSource
 
@@ -27,7 +26,7 @@ class FileFromStream(
  */
 data class FileFromBytes(
     val bytes: ByteArray,
-    override val contentType: ContentType,
+    override val contentType: String,
 ) : FileSource
 
 /**
@@ -35,5 +34,5 @@ data class FileFromBytes(
  */
 data class FileFromUrl(
     val url: URL,
-    override val contentType: ContentType,
+    override val contentType: String,
 ) : FileSource
