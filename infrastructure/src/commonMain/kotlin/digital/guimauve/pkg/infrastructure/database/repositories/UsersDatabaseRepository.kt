@@ -1,10 +1,10 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
+import digital.guimauve.pkg.domain.models.users.CreateUserPayload
+import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.domain.repositories.UsersRepository
 import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Users
-import digital.guimauve.pkg.models.users.CreateUserPayload
-import digital.guimauve.pkg.models.users.User
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils

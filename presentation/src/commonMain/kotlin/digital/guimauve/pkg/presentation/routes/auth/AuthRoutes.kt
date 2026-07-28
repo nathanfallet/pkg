@@ -1,14 +1,14 @@
 package digital.guimauve.pkg.presentation.routes.auth
 
+import digital.guimauve.pkg.domain.models.auth.LoginPayload
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.auth.LoginPayload
-import digital.guimauve.pkg.models.auth.SessionPayload
 import digital.guimauve.pkg.presentation.extensions.clearSession
 import digital.guimauve.pkg.presentation.extensions.respondView
 import digital.guimauve.pkg.presentation.extensions.setSession
 import digital.guimauve.pkg.presentation.extensions.userOrNull
 import digital.guimauve.pkg.presentation.mappers.users.toUserView
+import digital.guimauve.pkg.presentation.models.SessionPayload
 import digital.guimauve.pkg.presentation.views.LayoutView
 import digital.guimauve.pkg.presentation.views.LoginPageView
 import io.ktor.http.*

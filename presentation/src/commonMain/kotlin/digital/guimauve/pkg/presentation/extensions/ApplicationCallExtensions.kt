@@ -4,11 +4,11 @@ import digital.guimauve.pkg.domain.exceptions.auth.InvalidCredentialsException
 import digital.guimauve.pkg.domain.exceptions.auth.InvalidTokenException
 import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationForbiddenException
 import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationNotFoundException
+import digital.guimauve.pkg.domain.models.organizations.Organization
+import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.auth.SessionPayload
-import digital.guimauve.pkg.models.organizations.Organization
-import digital.guimauve.pkg.models.users.User
+import digital.guimauve.pkg.presentation.models.SessionPayload
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

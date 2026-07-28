@@ -1,9 +1,9 @@
 package digital.guimauve.pkg.domain.usecases.packages.versions.files
 
 import digital.guimauve.pkg.domain.exceptions.packages.versions.files.PackageVersionFileAlreadyExistsException
+import digital.guimauve.pkg.domain.models.packages.versions.files.CreatePackageVersionFilePayload
+import digital.guimauve.pkg.domain.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.domain.models.storage.FileSource
-import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
-import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import kotlin.uuid.Uuid
 
 interface CreatePackageVersionFileUseCase {

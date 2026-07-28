@@ -1,6 +1,9 @@
 package digital.guimauve.pkg.presentation.routes.packages.maven
 
 import digital.guimauve.pkg.domain.exceptions.packages.PackagePrivateException
+import digital.guimauve.pkg.domain.models.packages.PackageFormat
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
+import digital.guimauve.pkg.domain.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCaseImpl
@@ -12,9 +15,6 @@ import digital.guimauve.pkg.domain.usecases.packages.versions.files.DownloadFile
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetLatestPackageVersionFileUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetPackageVersionFileByNameUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.packages.PackageFormat
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
-import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper.configureTestApplication
 import io.ktor.client.request.*

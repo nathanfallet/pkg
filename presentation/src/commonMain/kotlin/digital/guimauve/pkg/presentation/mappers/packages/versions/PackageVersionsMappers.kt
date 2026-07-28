@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.presentation.mappers.packages.versions
 
 import digital.guimauve.pkg.api.responses.packages.versions.PackageVersionResponse
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import digital.guimauve.pkg.presentation.mappers.formatted
 import digital.guimauve.pkg.presentation.views.PackageVersionView
 

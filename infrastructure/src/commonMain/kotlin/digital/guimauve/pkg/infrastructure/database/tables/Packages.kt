@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.infrastructure.database.tables
 
-import digital.guimauve.pkg.models.packages.Package
-import digital.guimauve.pkg.models.packages.PackageFormat
+import digital.guimauve.pkg.domain.models.packages.Package
+import digital.guimauve.pkg.domain.models.packages.PackageFormat
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.dao.id.UuidTable
 import org.jetbrains.exposed.v1.datetime.timestamp

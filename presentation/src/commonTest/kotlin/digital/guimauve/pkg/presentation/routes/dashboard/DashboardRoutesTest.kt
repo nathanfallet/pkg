@@ -1,5 +1,7 @@
 package digital.guimauve.pkg.presentation.routes.dashboard
 
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
+import digital.guimauve.pkg.domain.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.ListPackagesUseCase
@@ -9,8 +11,6 @@ import digital.guimauve.pkg.domain.usecases.packages.versions.files.ListPackageV
 import digital.guimauve.pkg.domain.usecases.users.GetUserInOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.domain.usecases.users.ListUsersUseCase
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
-import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper.configureTestApplication
 import io.ktor.client.request.*

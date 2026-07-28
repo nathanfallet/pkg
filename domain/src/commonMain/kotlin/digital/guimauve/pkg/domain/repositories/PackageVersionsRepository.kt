@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.domain.repositories
 
-import digital.guimauve.pkg.models.packages.versions.CreatePackageVersionPayload
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
+import digital.guimauve.pkg.domain.models.packages.versions.CreatePackageVersionPayload
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import kotlin.uuid.Uuid
 
 interface PackageVersionsRepository {

@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.presentation.mappers.users
 
 import digital.guimauve.pkg.api.responses.users.UserResponse
-import digital.guimauve.pkg.models.users.User
+import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.presentation.views.UserView
 
 /**

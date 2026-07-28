@@ -1,8 +1,8 @@
 package digital.guimauve.pkg.infrastructure.config
 
+import digital.guimauve.pkg.domain.models.auth.LoginPayload
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.infrastructure.jwt.JwtTokenService
-import digital.guimauve.pkg.models.auth.LoginPayload
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

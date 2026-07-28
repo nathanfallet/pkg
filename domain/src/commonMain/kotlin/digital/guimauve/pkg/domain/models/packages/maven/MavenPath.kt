@@ -1,11 +1,7 @@
-package digital.guimauve.pkg.models.packages.maven
+package digital.guimauve.pkg.domain.models.packages.maven
 
-import digital.guimauve.zodable.Zodable
 import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
 
-@Zodable
-@JsExport
 @Serializable
 data class MavenPath(
     val groupId: String,

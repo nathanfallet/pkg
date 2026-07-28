@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.domain.repositories
 
-import digital.guimauve.pkg.models.users.CreateUserPayload
-import digital.guimauve.pkg.models.users.User
+import digital.guimauve.pkg.domain.models.users.CreateUserPayload
+import digital.guimauve.pkg.domain.models.users.User
 import kotlin.uuid.Uuid
 
 interface UsersRepository {

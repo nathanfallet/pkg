@@ -2,16 +2,16 @@ package digital.guimauve.pkg.presentation.routes
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import digital.guimauve.pkg.domain.models.organizations.Organization
+import digital.guimauve.pkg.domain.models.packages.Package
+import digital.guimauve.pkg.domain.models.packages.PackageFormat
+import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.domain.services.TranslateService
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.auth.SessionPayload
-import digital.guimauve.pkg.models.organizations.Organization
-import digital.guimauve.pkg.models.packages.Package
-import digital.guimauve.pkg.models.packages.PackageFormat
-import digital.guimauve.pkg.models.users.User
 import digital.guimauve.pkg.presentation.config.configureErrorHandling
 import digital.guimauve.pkg.presentation.config.configureSerialization
 import digital.guimauve.pkg.presentation.config.configureTemplating
+import digital.guimauve.pkg.presentation.models.SessionPayload
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*

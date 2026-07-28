@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.api.responses.packages
 
-import digital.guimauve.pkg.models.packages.PackageFormat
-import digital.guimauve.zodable.Zodable
+import dev.zodable.Zodable
+import digital.guimauve.pkg.api.models.packages.PackageFormat
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport
 import kotlin.time.Instant

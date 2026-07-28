@@ -1,11 +1,11 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
+import digital.guimauve.pkg.domain.models.packages.versions.files.CreatePackageVersionFilePayload
+import digital.guimauve.pkg.domain.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.domain.repositories.PackageVersionFilesRepository
 import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersionFiles
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersions
-import digital.guimauve.pkg.models.packages.versions.files.CreatePackageVersionFilePayload
-import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import org.jetbrains.exposed.v1.core.JoinType
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and

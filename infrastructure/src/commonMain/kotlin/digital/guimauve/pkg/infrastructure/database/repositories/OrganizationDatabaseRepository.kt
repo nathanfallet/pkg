@@ -1,10 +1,10 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
+import digital.guimauve.pkg.domain.models.organizations.CreateOrganizationPayload
+import digital.guimauve.pkg.domain.models.organizations.Organization
 import digital.guimauve.pkg.domain.repositories.OrganizationsRepository
 import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Organizations
-import digital.guimauve.pkg.models.organizations.CreateOrganizationPayload
-import digital.guimauve.pkg.models.organizations.Organization
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.insert

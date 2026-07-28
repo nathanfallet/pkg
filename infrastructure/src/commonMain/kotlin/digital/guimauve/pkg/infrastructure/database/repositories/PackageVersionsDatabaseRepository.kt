@@ -3,8 +3,8 @@ package digital.guimauve.pkg.infrastructure.database.repositories
 import digital.guimauve.pkg.domain.repositories.PackageVersionsRepository
 import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.PackageVersions
-import digital.guimauve.pkg.models.packages.versions.CreatePackageVersionPayload
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
+import digital.guimauve.pkg.domain.models.packages.versions.CreatePackageVersionPayload
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq

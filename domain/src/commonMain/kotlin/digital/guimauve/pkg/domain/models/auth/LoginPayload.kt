@@ -1,11 +1,7 @@
-package digital.guimauve.pkg.models.auth
+package digital.guimauve.pkg.domain.models.auth
 
-import digital.guimauve.zodable.Zodable
 import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
 
-@Zodable
-@JsExport
 @Serializable
 data class LoginPayload(
     val email: String,

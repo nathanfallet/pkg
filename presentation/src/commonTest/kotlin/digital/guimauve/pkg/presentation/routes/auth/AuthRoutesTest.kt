@@ -1,8 +1,8 @@
 package digital.guimauve.pkg.presentation.routes.auth
 
+import digital.guimauve.pkg.domain.models.auth.LoginPayload
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.auth.LoginPayload
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper.configureTestApplication
 import io.ktor.client.request.*

@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.presentation.mappers.organizations
 
 import digital.guimauve.pkg.api.responses.organizations.OrganizationResponse
-import digital.guimauve.pkg.models.organizations.Organization
+import digital.guimauve.pkg.domain.models.organizations.Organization
 import digital.guimauve.pkg.presentation.views.OrganizationView
 
 /**

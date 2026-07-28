@@ -1,8 +1,8 @@
 package digital.guimauve.pkg.presentation.routes.packages.pypi
 
+import digital.guimauve.pkg.domain.models.packages.PackageFormat
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.packages.PackageFormat
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper.configureTestApplication
 import io.ktor.client.request.*

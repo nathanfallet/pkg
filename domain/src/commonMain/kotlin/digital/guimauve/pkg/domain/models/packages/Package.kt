@@ -1,13 +1,9 @@
-package digital.guimauve.pkg.models.packages
+package digital.guimauve.pkg.domain.models.packages
 
-import digital.guimauve.zodable.Zodable
 import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-@Zodable
-@JsExport
 @Serializable
 data class Package(
     val id: Uuid,

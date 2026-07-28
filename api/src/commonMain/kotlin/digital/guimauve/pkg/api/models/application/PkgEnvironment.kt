@@ -1,6 +1,6 @@
-package digital.guimauve.pkg.models.application
+package digital.guimauve.pkg.api.models.application
 
-import digital.guimauve.zodable.Zodable
+import dev.zodable.Zodable
 import kotlin.js.JsExport
 
 @Zodable

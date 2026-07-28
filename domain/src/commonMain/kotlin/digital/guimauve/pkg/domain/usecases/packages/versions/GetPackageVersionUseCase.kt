@@ -1,6 +1,6 @@
 package digital.guimauve.pkg.domain.usecases.packages.versions
 
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import kotlin.uuid.Uuid
 
 interface GetPackageVersionUseCase {

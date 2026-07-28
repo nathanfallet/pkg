@@ -1,13 +1,13 @@
 package digital.guimauve.pkg.presentation.routes.packages.npm
 
+import digital.guimauve.pkg.api.models.packages.npm.NpmPackage
+import digital.guimauve.pkg.api.models.packages.npm.NpmVersion
 import digital.guimauve.pkg.domain.exceptions.packages.PackageNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.PackageVersionNotFoundException
+import digital.guimauve.pkg.domain.models.packages.PackageFormat
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.GetPackageVersionByNameUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.packages.PackageFormat
-import digital.guimauve.pkg.models.packages.npm.NpmPackage
-import digital.guimauve.pkg.models.packages.npm.NpmVersion
 import digital.guimauve.pkg.presentation.extensions.requireUser
 import digital.guimauve.pkg.presentation.extensions.userOrNull
 import io.ktor.http.*

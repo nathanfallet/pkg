@@ -3,14 +3,14 @@ package digital.guimauve.pkg.presentation.routes.packages.versions
 import digital.guimauve.pkg.api.resources.packages.versions.PackageVersionsApi
 import digital.guimauve.pkg.domain.exceptions.packages.PackageNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.PackageVersionNotFoundException
+import digital.guimauve.pkg.domain.models.packages.Package
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.GetPackageVersionUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.ListPackageVersionsUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.ListPackageVersionFilesUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
-import digital.guimauve.pkg.models.packages.Package
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
 import digital.guimauve.pkg.presentation.extensions.requireOrganization
 import digital.guimauve.pkg.presentation.mappers.packages.versions.files.toPackageVersionFileResponse
 import digital.guimauve.pkg.presentation.mappers.packages.versions.toPackageVersionResponse

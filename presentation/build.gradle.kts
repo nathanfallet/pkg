@@ -51,6 +51,7 @@ kotlin {
         }
         val commonMain by getting {
             dependencies {
+                api(projects.api)
                 api(projects.domain)
 
                 api(libs.koin.ktor)

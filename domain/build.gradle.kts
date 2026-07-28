@@ -51,7 +51,7 @@ kotlin {
         }
         val commonMain by getting {
             dependencies {
-                api(projects.api)
+                api(libs.kotlinx.serialization.json)
                 api(libs.kotlinx.coroutines.core)
                 api(libs.koin.core)
             }

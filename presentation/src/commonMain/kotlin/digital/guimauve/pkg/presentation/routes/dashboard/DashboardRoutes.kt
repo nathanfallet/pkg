@@ -4,6 +4,8 @@ import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationNotFound
 import digital.guimauve.pkg.domain.exceptions.packages.PackageNotFoundException
 import digital.guimauve.pkg.domain.exceptions.packages.versions.PackageVersionNotFoundException
 import digital.guimauve.pkg.domain.exceptions.users.UserNotFoundException
+import digital.guimauve.pkg.domain.models.organizations.Organization
+import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.ListPackagesUseCase
@@ -13,8 +15,6 @@ import digital.guimauve.pkg.domain.usecases.packages.versions.files.ListPackageV
 import digital.guimauve.pkg.domain.usecases.users.GetUserInOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.domain.usecases.users.ListUsersUseCase
-import digital.guimauve.pkg.models.organizations.Organization
-import digital.guimauve.pkg.models.users.User
 import digital.guimauve.pkg.presentation.extensions.respondView
 import digital.guimauve.pkg.presentation.extensions.userOrNull
 import digital.guimauve.pkg.presentation.mappers.organizations.toOrganizationView

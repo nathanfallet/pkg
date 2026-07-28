@@ -1,11 +1,11 @@
 package digital.guimauve.pkg.domain.usecases.packages
 
 import digital.guimauve.pkg.domain.exceptions.packages.PackageWriteForbiddenException
+import digital.guimauve.pkg.domain.models.packages.CreatePackagePayload
+import digital.guimauve.pkg.domain.models.packages.Package
+import digital.guimauve.pkg.domain.models.packages.PackageFormat
+import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.domain.repositories.PackagesRepository
-import digital.guimauve.pkg.models.packages.CreatePackagePayload
-import digital.guimauve.pkg.models.packages.Package
-import digital.guimauve.pkg.models.packages.PackageFormat
-import digital.guimauve.pkg.models.users.User
 
 class GetOrCreatePackageUseCaseImpl(
     private val repository: PackagesRepository,

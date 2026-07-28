@@ -1,11 +1,7 @@
-package digital.guimauve.pkg.models.packages
+package digital.guimauve.pkg.domain.models.packages
 
-import digital.guimauve.zodable.Zodable
 import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
 
-@Zodable
-@JsExport
 @Serializable
 data class CreatePackagePayload(
     val name: String,

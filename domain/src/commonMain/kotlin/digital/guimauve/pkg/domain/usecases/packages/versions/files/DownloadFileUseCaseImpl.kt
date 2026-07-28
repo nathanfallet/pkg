@@ -1,8 +1,8 @@
 package digital.guimauve.pkg.domain.usecases.packages.versions.files
 
 import digital.guimauve.pkg.domain.exceptions.storage.StorageFileNotFoundException
+import digital.guimauve.pkg.domain.models.packages.versions.files.PackageVersionFile
 import digital.guimauve.pkg.domain.services.StorageService
-import digital.guimauve.pkg.models.packages.versions.files.PackageVersionFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

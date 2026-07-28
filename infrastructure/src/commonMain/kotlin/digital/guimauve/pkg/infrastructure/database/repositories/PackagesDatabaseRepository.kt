@@ -1,12 +1,12 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
+import digital.guimauve.pkg.domain.models.packages.CreatePackagePayload
+import digital.guimauve.pkg.domain.models.packages.Package
+import digital.guimauve.pkg.domain.models.packages.PackageFormat
+import digital.guimauve.pkg.domain.models.packages.UpdatePackagePayload
 import digital.guimauve.pkg.domain.repositories.PackagesRepository
 import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Packages
-import digital.guimauve.pkg.models.packages.CreatePackagePayload
-import digital.guimauve.pkg.models.packages.Package
-import digital.guimauve.pkg.models.packages.PackageFormat
-import digital.guimauve.pkg.models.packages.UpdatePackagePayload
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.*

@@ -1,12 +1,8 @@
-package digital.guimauve.pkg.models.users
+package digital.guimauve.pkg.domain.models.users
 
-import digital.guimauve.zodable.Zodable
 import kotlinx.serialization.Serializable
-import kotlin.js.JsExport
 import kotlin.uuid.Uuid
 
-@Zodable
-@JsExport
 @Serializable
 data class User(
     val id: Uuid,

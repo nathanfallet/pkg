@@ -1,6 +1,6 @@
-package digital.guimauve.pkg.models.packages.npm
+package digital.guimauve.pkg.api.models.packages.npm
 
-import digital.guimauve.zodable.Zodable
+import dev.zodable.Zodable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.JsExport

@@ -1,6 +1,6 @@
 package digital.guimauve.pkg.infrastructure.database.tables
 
-import digital.guimauve.pkg.models.packages.versions.PackageVersion
+import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.dao.id.UuidTable
 import org.jetbrains.exposed.v1.datetime.timestamp

@@ -1,7 +1,7 @@
 package digital.guimauve.pkg.domain.usecases.users
 
+import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.domain.services.TokenService
-import digital.guimauve.pkg.models.users.User
 
 class GetUserForRefreshTokenUseCaseImpl(
     private val tokenService: TokenService,
