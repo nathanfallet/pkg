@@ -16,7 +16,7 @@ class MySQLDatabaseFactory(
         HikariDataSource(
             HikariConfig().apply {
                 poolName = "hikari-${config.name}"
-                jdbcUrl = "jdbc:mysql://${config.host}:3306/${config.name}"
+                jdbcUrl = "jdbc:mysql://${config.host}:${config.port}/${config.name}"
                 driverClassName = "com.mysql.cj.jdbc.Driver"
                 username = config.user
                 password = config.password
