@@ -52,6 +52,18 @@ dependencies {
     testImplementation(libs.h2)
 }
 
+// flyway-core and flyway-mysql each ship META-INF/services/org.flywaydb.core.extensibility.Plugin. Shadow
+// keeps only one by default; Flyway then loses its core extensions and the migration crashes at boot
+// (an NPE in PluginRegister), which no test catches since tests do not run on the fat jar. Merge the
+// service files, and keep the default "first wins" for everything else.
+tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    mergeServiceFiles()
+    filesNotMatching("META-INF/services/**") {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}
+
 tasks.test {
     useJUnitPlatform()
 }

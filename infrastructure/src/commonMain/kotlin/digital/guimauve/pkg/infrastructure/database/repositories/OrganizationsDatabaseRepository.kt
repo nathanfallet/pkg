@@ -6,7 +6,6 @@ import digital.guimauve.pkg.domain.repositories.OrganizationsRepository
 import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Organizations
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.uuid.Uuid
@@ -14,12 +13,6 @@ import kotlin.uuid.Uuid
 class OrganizationsDatabaseRepository(
     private val transactionManager: TransactionManager,
 ) : OrganizationsRepository {
-
-    init {
-        transactionManager.transaction {
-            SchemaUtils.create(Organizations)
-        }
-    }
 
     override suspend fun get(id: Uuid): Organization? =
         transactionManager.suspendTransaction {

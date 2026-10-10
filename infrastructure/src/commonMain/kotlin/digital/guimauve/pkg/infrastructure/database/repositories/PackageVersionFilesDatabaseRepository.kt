@@ -10,7 +10,6 @@ import org.jetbrains.exposed.v1.core.JoinType
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.uuid.Uuid
@@ -18,12 +17,6 @@ import kotlin.uuid.Uuid
 class PackageVersionFilesDatabaseRepository(
     private val transactionManager: TransactionManager,
 ) : PackageVersionFilesRepository {
-
-    init {
-        transactionManager.transaction {
-            SchemaUtils.create(PackageVersionFiles)
-        }
-    }
 
     override suspend fun list(versionId: Uuid): List<PackageVersionFile> =
         transactionManager.suspendTransaction {

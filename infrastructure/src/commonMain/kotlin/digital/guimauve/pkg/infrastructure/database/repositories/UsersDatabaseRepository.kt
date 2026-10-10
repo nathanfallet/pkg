@@ -7,7 +7,6 @@ import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.tables.Users
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.uuid.Uuid
@@ -15,12 +14,6 @@ import kotlin.uuid.Uuid
 class UsersDatabaseRepository(
     private val transactionManager: TransactionManager,
 ) : UsersRepository {
-
-    init {
-        transactionManager.transaction {
-            SchemaUtils.create(Users)
-        }
-    }
 
     override suspend fun list(organizationId: Uuid): List<User> =
         transactionManager.suspendTransaction {
