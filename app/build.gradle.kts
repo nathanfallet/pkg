@@ -26,11 +26,16 @@ ktor {
         localImageName.set("pkg")
         findProperty("imageTag")?.let { imageTag.set(it.toString()) }
 
+        // Published by CI: on every push to main (latest) and on each tag (see .github/workflows).
+        // The image lives in the `guimauvedigital` namespace, but Docker Hub logins go through the
+        // `guimauvedigitalholder` account (the one DOCKER_HUB_PASSWORD belongs to). `dockerHub()` would
+        // derive the image name from the username, so the namespace is set separately here.
         externalRegistry.set(
-            io.ktor.plugin.features.DockerImageRegistry.dockerHub(
-                appName = provider { "pkg" },
-                username = provider { "guimauvedigital" },
-                password = providers.environmentVariable("DOCKER_HUB_PASSWORD")
+            io.ktor.plugin.features.DockerImageRegistry.externalRegistry(
+                username = provider { "guimauvedigitalholder" },
+                password = providers.environmentVariable("DOCKER_HUB_PASSWORD"),
+                project = provider { "pkg" },
+                namespace = provider { "guimauvedigital" },
             )
         )
     }
