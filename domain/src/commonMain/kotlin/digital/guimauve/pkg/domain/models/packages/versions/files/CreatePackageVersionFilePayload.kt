@@ -4,6 +4,10 @@ import digital.guimauve.pkg.domain.models.packages.Package
 import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import kotlinx.serialization.Serializable
 
+/**
+ * What it takes to record a [PackageVersionFile]. The secondary constructor derives the storage path,
+ * `<organizationId>/<packageId>/<versionId>/<name>`.
+ */
 @Serializable
 data class CreatePackageVersionFilePayload(
     val name: String,
