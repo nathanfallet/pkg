@@ -42,7 +42,8 @@ class CreatePackageVersionFileUseCaseImpl(
             }
         }
 
-        storageService.uploadStream(stream, payload.path)
+        // A file the storage did not keep must not be recorded: it would be listed but never served.
+        storageService.uploadStream(stream, payload.path) ?: return null
         return repository.create(payload, versionId, stream.contentType.toString(), stream.contentLength)
     }
 }
