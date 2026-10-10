@@ -4,6 +4,9 @@ import digital.guimauve.pkg.infrastructure.database.DatabaseConfig
 import digital.guimauve.pkg.infrastructure.database.H2DatabaseFactory
 import digital.guimauve.pkg.infrastructure.database.TransactionManager
 import digital.guimauve.pkg.infrastructure.database.TransactionManagerImpl
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.microseconds
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 /**
@@ -19,3 +22,11 @@ internal fun migratedDatabase(): TransactionManager {
     factory.migrate()
     return TransactionManagerImpl(factory)
 }
+
+/**
+ * Asserts that [stored] is [written] as a `DATETIME(6)` keeps it. The JVM clock has nanoseconds on
+ * Linux (microseconds on macOS), so what a `create` returns and what any read returns can differ by
+ * less than a microsecond.
+ */
+internal fun assertStoredInstant(written: Instant, stored: Instant) =
+    assertTrue((written - stored).absoluteValue < 1.microseconds, "$written stored as $stored")

@@ -1,6 +1,7 @@
 package digital.guimauve.pkg.infrastructure.database.repositories
 
 import digital.guimauve.pkg.domain.models.packages.CreatePackagePayload
+import digital.guimauve.pkg.domain.models.packages.Package
 import digital.guimauve.pkg.domain.models.packages.PackageFormat
 import digital.guimauve.pkg.domain.models.packages.UpdatePackagePayload
 import kotlinx.coroutines.runBlocking
@@ -25,22 +26,30 @@ class PackagesDatabaseRepositoryTest {
     private val organizationId = Uuid.random()
     private val otherOrganizationId = Uuid.random()
 
+    /** Creates a package and returns it as stored, so it compares equal to what the reads return. */
     private suspend fun create(
         name: String = "digital.guimauve:pkg",
         format: PackageFormat = PackageFormat.MAVEN,
         isPublic: Boolean = false,
         organizationId: Uuid = this.organizationId,
-    ) = assertNotNull(repository.create(CreatePackagePayload(name, format, isPublic), organizationId))
+    ): Package {
+        val created = assertNotNull(repository.create(CreatePackagePayload(name, format, isPublic), organizationId))
+        return assertNotNull(repository.get(created.id, organizationId))
+    }
 
     @Test
     fun `a created package is read back in its organization`() = runBlocking {
-        val created = create(isPublic = true)
+        val created = assertNotNull(
+            repository.create(CreatePackagePayload("digital.guimauve:pkg", PackageFormat.MAVEN, true), organizationId)
+        )
 
         assertEquals("digital.guimauve:pkg", created.name)
         assertEquals(PackageFormat.MAVEN, created.format)
         assertEquals(organizationId, created.organizationId)
         assertTrue(created.isPublic)
-        assertEquals(created, repository.get(created.id, organizationId))
+        val stored = assertNotNull(repository.get(created.id, organizationId))
+        assertEquals(created.copy(createdAt = stored.createdAt), stored)
+        assertStoredInstant(created.createdAt, stored.createdAt)
     }
 
     @Test

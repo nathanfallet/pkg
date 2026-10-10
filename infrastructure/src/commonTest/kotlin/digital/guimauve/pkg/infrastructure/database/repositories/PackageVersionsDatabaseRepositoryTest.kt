@@ -52,8 +52,10 @@ class PackageVersionsDatabaseRepositoryTest {
         assertEquals(publisher, created.publishedBy)
         assertEquals("{\"main\":\"index.js\"}", created.metadata)
         assertFalse(created.yanked, "a new version is not yanked")
-        assertEquals(created, repository.get(created.id, packageId))
-        assertEquals(created, repository.getByName("1.0.0", packageId))
+        val stored = assertNotNull(repository.get(created.id, packageId))
+        assertEquals(created.copy(publishedAt = stored.publishedAt), stored)
+        assertStoredInstant(created.publishedAt, stored.publishedAt)
+        assertEquals(stored, repository.getByName("1.0.0", packageId))
     }
 
     @Test
