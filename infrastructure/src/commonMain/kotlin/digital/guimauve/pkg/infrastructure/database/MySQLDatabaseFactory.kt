@@ -2,6 +2,9 @@ package digital.guimauve.pkg.infrastructure.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import io.opentelemetry.api.OpenTelemetry
+import io.opentelemetry.instrumentation.hikaricp.v3_0.HikariTelemetry
+import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.v1.jdbc.Database
 
@@ -10,6 +13,7 @@ import org.jetbrains.exposed.v1.jdbc.Database
  */
 class MySQLDatabaseFactory(
     private val config: DatabaseConfig,
+    private val openTelemetry: OpenTelemetry = OpenTelemetry.noop(),
 ) : DatabaseFactory {
 
     private val dataSource: HikariDataSource by lazy {
@@ -29,11 +33,14 @@ class MySQLDatabaseFactory(
                 maxLifetime = 1_800_000
                 keepaliveTime = 600_000
                 leakDetectionThreshold = 60_000
+                // Pool metrics: connections in use, pending, and how long a connection takes to get.
+                metricsTrackerFactory = HikariTelemetry.create(openTelemetry).createMetricsTrackerFactory()
             }
         )
     }
 
-    private val db: Database by lazy { Database.connect(dataSource) }
+    // Every statement becomes a span, under the HTTP call that ran it.
+    private val db: Database by lazy { Database.connect(JdbcTelemetry.create(openTelemetry).wrap(dataSource)) }
 
     override fun getDatabase(): Database = db
 

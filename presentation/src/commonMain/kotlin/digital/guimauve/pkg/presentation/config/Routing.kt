@@ -31,6 +31,8 @@ fun Application.configureRouting() {
         allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Authorization)
+        allowHeader(HttpHeaders.XRequestId)
+        exposeHeader(HttpHeaders.XRequestId)
         anyHost()
     }
     routing {

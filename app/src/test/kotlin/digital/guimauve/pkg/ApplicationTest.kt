@@ -8,6 +8,7 @@ import io.ktor.server.testing.*
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Boots the real application, so these cover the wiring the route tests mock away: the Koin graph,
@@ -87,6 +88,20 @@ class ApplicationTest {
         val ready = client.get("/readyz")
         assertEquals(HttpStatusCode.OK, ready.status)
         assertEquals("""{"database":true}""", ready.bodyAsText())
+    }
+
+    /**
+     * Every response carries the request id its logs are printed with: the caller's when it sent a
+     * valid one, a fresh one otherwise — error responses included.
+     */
+    @Test
+    fun testRequestId() = withApplication {
+        val echoed = client.get("/healthz") { header(HttpHeaders.XRequestId, "pkg-test-1") }
+        assertEquals("pkg-test-1", echoed.headers[HttpHeaders.XRequestId])
+
+        val generated = client.get("/does-not-exist")
+        assertEquals(HttpStatusCode.NotFound, generated.status)
+        assertTrue(!generated.headers[HttpHeaders.XRequestId].isNullOrBlank())
     }
 
     /**

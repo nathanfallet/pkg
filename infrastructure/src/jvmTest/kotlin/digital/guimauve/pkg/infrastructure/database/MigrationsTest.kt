@@ -4,10 +4,6 @@ import digital.guimauve.pkg.infrastructure.database.tables.*
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
-import org.junit.jupiter.api.Assumptions.assumeTrue
-import org.testcontainers.DockerClientFactory
-import org.testcontainers.mysql.MySQLContainer
-import java.sql.DriverManager
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -63,32 +59,6 @@ class MigrationsTest {
             MigrationUtils.statementsRequiredForDatabaseMigration(*tables, withLogs = false)
         }
 
-    /** A new, empty database on the shared MySQL container. */
-    private fun mysql(name: String): DatabaseFactory {
-        assumeTrue(DockerClientFactory.instance().isDockerAvailable, "Docker is needed for the MySQL checks")
-        DriverManager.getConnection(container.jdbcUrl, container.username, container.password).use {
-            it.createStatement().execute("CREATE DATABASE `$name`")
-        }
-        return MySQLDatabaseFactory(
-            DatabaseConfig(
-                protocol = "mysql",
-                name = name,
-                host = container.host,
-                port = container.firstMappedPort,
-                user = container.username,
-                password = container.password,
-                maximumPoolSize = 2,
-            )
-        )
-    }
-
-    companion object {
-
-        // The same major as the Bitnami MySQL chart in helm/ and the generateMigrations task.
-        private val container: MySQLContainer by lazy {
-            MySQLContainer("mysql:8.0").withUsername("root").withPassword("root").apply { start() }
-        }
-
-    }
+    private fun mysql(name: String): DatabaseFactory = MySQLTestContainer.database(name)
 
 }
