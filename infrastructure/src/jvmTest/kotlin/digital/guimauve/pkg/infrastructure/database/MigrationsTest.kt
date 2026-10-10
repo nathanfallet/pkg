@@ -1,8 +1,6 @@
 package digital.guimauve.pkg.infrastructure.database
 
 import digital.guimauve.pkg.infrastructure.database.tables.*
-import org.flywaydb.core.Flyway
-import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
@@ -54,9 +52,7 @@ class MigrationsTest {
 
     @Test
     fun migrationsRunOnH2() {
-        val factory = H2DatabaseFactory(
-            DatabaseConfig(protocol = "h2", host = "", name = "migrations-test", user = "", password = "")
-        )
+        val factory = H2DatabaseFactory(DatabaseConfig(protocol = "h2", name = "migrations-test"))
         factory.migrate()
         // A second boot finds nothing pending.
         factory.migrate()
@@ -73,31 +69,17 @@ class MigrationsTest {
         DriverManager.getConnection(container.jdbcUrl, container.username, container.password).use {
             it.createStatement().execute("CREATE DATABASE `$name`")
         }
-        return ContainerDatabaseFactory(
-            "jdbc:mysql://${container.host}:${container.firstMappedPort}/$name",
-            container.username,
-            container.password,
+        return MySQLDatabaseFactory(
+            DatabaseConfig(
+                protocol = "mysql",
+                name = name,
+                host = container.host,
+                port = container.firstMappedPort,
+                user = container.username,
+                password = container.password,
+                maximumPoolSize = 2,
+            )
         )
-    }
-
-    /**
-     * Same migrations as [MySQLDatabaseFactory], on the container's mapped port: [DatabaseConfig] has no
-     * port, the production factory always dials 3306.
-     */
-    private class ContainerDatabaseFactory(
-        private val url: String,
-        private val user: String,
-        private val password: String,
-    ) : DatabaseFactory {
-
-        private val db: Database by lazy { Database.connect(url, "com.mysql.cj.jdbc.Driver", user, password) }
-
-        override fun getDatabase(): Database = db
-
-        override fun migrate() = Migrations.migrate(Flyway.configure().dataSource(url, user, password))
-
-        override fun isHealthy(): Boolean = true
-
     }
 
     companion object {

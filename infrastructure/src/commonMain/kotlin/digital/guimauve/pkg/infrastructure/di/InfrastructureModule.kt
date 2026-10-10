@@ -24,8 +24,11 @@ val Application.infrastructureModule: Module
         single {
             DatabaseConfig(
                 protocol = environment.config.property("database.protocol").getString(),
-                host = environment.config.property("database.host").getString(),
                 name = environment.config.property("database.name").getString(),
+                // Optional: a config without them keeps H2 in memory and MySQL on 3306.
+                directory = environment.config.propertyOrNull("database.directory")?.getString() ?: "",
+                host = environment.config.property("database.host").getString(),
+                port = environment.config.propertyOrNull("database.port")?.getString()?.toIntOrNull() ?: 3306,
                 user = environment.config.property("database.user").getString(),
                 password = environment.config.property("database.password").getString(),
             )
