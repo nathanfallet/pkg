@@ -60,6 +60,7 @@ kotlin {
                 api(libs.mysql)
                 api(libs.s3)
                 api(libs.bcrypt)
+                api(libs.bundles.opentelemetry)
 
                 api(libs.koin.ktor)
                 api(libs.ktor.server.core)
@@ -71,6 +72,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.tests.mockk)
+                implementation(libs.opentelemetry.sdk.testing)
                 implementation(libs.h2)
             }
         }

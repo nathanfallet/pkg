@@ -8,6 +8,8 @@ import digital.guimauve.pkg.infrastructure.database.repositories.*
 import digital.guimauve.pkg.infrastructure.health.DatabaseHealthService
 import digital.guimauve.pkg.infrastructure.i18n.PropertiesTranslateService
 import digital.guimauve.pkg.infrastructure.jwt.JwtTokenService
+import digital.guimauve.pkg.infrastructure.observability.TelemetryFactory
+import digital.guimauve.pkg.infrastructure.observability.TelemetryFactoryImpl
 import digital.guimauve.pkg.infrastructure.sessions.DatabaseSessionStorage
 import digital.guimauve.pkg.infrastructure.storage.ProxyStorageService
 import io.ktor.server.application.*
@@ -20,6 +22,15 @@ import org.koin.dsl.module
  */
 val Application.infrastructureModule: Module
     get() = module {
+        // Telemetry (OpenTelemetry, configured by the OTEL_* environment variables; off without an endpoint)
+        single<TelemetryFactory> {
+            val name = environment.config.property("ktor.environment").getString()
+            TelemetryFactoryImpl(
+                enabled = name != "test" && TelemetryFactoryImpl.isExportConfigured(System.getenv()),
+                environment = name,
+            )
+        }
+
         // Database
         single {
             DatabaseConfig(
@@ -36,7 +47,7 @@ val Application.infrastructureModule: Module
         single<DatabaseFactory> {
             val config = get<DatabaseConfig>()
             when (config.protocol) {
-                "mysql" -> MySQLDatabaseFactory(config)
+                "mysql" -> MySQLDatabaseFactory(config, get<TelemetryFactory>().getOpenTelemetry())
                 "h2" -> H2DatabaseFactory(config)
                 else -> throw IllegalArgumentException("Unsupported database protocol: ${config.protocol}")
             }
