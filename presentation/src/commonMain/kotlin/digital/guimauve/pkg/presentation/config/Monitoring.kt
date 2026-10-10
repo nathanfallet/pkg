@@ -16,8 +16,9 @@ fun Application.configureMonitoring() {
     install(CallId) {
         retrieveFromHeader(HttpHeaders.XRequestId)
         generate { Uuid.random().toString() }
-        // A caller-supplied id lands in the logs: keep it short and printable.
-        verify { it.isNotBlank() && it.length <= 128 && it.all { char -> char.isLetterOrDigit() || char in "-_.:" } }
+        // A caller-supplied id lands in the logs: keep it short and plain ASCII ([A-Za-z0-9-_.:]).
+        // `isLetterOrDigit` would also let through any Unicode letter, lookalikes included.
+        verify { it.isNotBlank() && it.length <= 128 && it.all(::isRequestIdChar) }
         replyToHeader(HttpHeaders.XRequestId)
     }
     install(CallLogging) {
@@ -29,3 +30,6 @@ fun Application.configureMonitoring() {
         }
     }
 }
+
+private fun isRequestIdChar(char: Char): Boolean =
+    char in 'A'..'Z' || char in 'a'..'z' || char in '0'..'9' || char in "-_.:"
