@@ -8,6 +8,9 @@ interface DatabaseFactory {
     /** Returns the (lazily connected) [Database] instance. */
     fun getDatabase(): Database
 
+    /** Applies the pending schema migrations. Called once at boot, before any repository runs. */
+    fun migrate()
+
     /** Returns true if the database connection is healthy. */
     fun isHealthy(): Boolean
 

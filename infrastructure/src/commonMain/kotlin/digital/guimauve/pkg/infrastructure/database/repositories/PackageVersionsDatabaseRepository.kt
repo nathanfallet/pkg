@@ -8,7 +8,6 @@ import digital.guimauve.pkg.infrastructure.database.tables.PackageVersions
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import kotlin.time.Clock
@@ -17,12 +16,6 @@ import kotlin.uuid.Uuid
 class PackageVersionsDatabaseRepository(
     private val transactionManager: TransactionManager,
 ) : PackageVersionsRepository {
-
-    init {
-        transactionManager.transaction {
-            SchemaUtils.create(PackageVersions)
-        }
-    }
 
     override suspend fun list(packageId: Uuid): List<PackageVersion> =
         transactionManager.suspendTransaction {

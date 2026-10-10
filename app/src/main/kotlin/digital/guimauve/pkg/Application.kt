@@ -1,6 +1,7 @@
 package digital.guimauve.pkg
 
 import digital.guimauve.pkg.domain.di.domainModule
+import digital.guimauve.pkg.infrastructure.config.configureDatabase
 import digital.guimauve.pkg.infrastructure.config.configureSecurity
 import digital.guimauve.pkg.infrastructure.di.infrastructureModule
 import digital.guimauve.pkg.presentation.config.*
@@ -16,6 +17,7 @@ fun Application.module() {
     install(Koin) {
         modules(domainModule, presentationModule, infrastructureModule)
     }
+    configureDatabase()
     configureSerialization()
     configureTemplating()
     configureErrorHandling()

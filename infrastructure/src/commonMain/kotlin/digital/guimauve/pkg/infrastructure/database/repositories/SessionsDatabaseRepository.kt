@@ -10,12 +10,6 @@ class SessionsDatabaseRepository(
     private val transactionManager: TransactionManager,
 ) : SessionsRepository {
 
-    init {
-        transactionManager.transaction {
-            SchemaUtils.create(Sessions)
-        }
-    }
-
     override suspend fun get(id: String): String? =
         transactionManager.suspendTransaction {
             Sessions

@@ -2,6 +2,7 @@ package digital.guimauve.pkg.infrastructure.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.v1.jdbc.Database
 
 /**
@@ -35,6 +36,8 @@ class MySQLDatabaseFactory(
     private val db: Database by lazy { Database.connect(dataSource) }
 
     override fun getDatabase(): Database = db
+
+    override fun migrate() = Migrations.migrate(Flyway.configure().dataSource(dataSource))
 
     override fun isHealthy(): Boolean = !dataSource.isClosed && dataSource.isRunning
 

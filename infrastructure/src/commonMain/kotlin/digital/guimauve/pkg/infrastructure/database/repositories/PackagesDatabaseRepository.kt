@@ -17,12 +17,6 @@ class PackagesDatabaseRepository(
     private val transactionManager: TransactionManager,
 ) : PackagesRepository {
 
-    init {
-        transactionManager.transaction {
-            SchemaUtils.create(Packages)
-        }
-    }
-
     override suspend fun list(organizationId: Uuid): List<Package> =
         transactionManager.suspendTransaction {
             Packages
