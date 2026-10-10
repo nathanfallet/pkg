@@ -17,7 +17,7 @@ data class User(
 
     companion object {
 
-        /** The format an email address must have; the login checks it before reaching the database. */
+        /** The format an email address must have; the web login form checks it before reaching the database. */
         const val EMAIL_REGEX = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
 
     }
