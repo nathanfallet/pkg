@@ -43,7 +43,14 @@ In your `.npmrc`:
 @organization-name:registry=https://pkg.guimauve.digital/npm/
 ```
 
-To publish, you also need a token:
+To install private packages or publish, you also need credentials. Either the ones you use for
+maven, as `base64(username:password)`, which never expire:
+
+```ini
+//pkg.guimauve.digital/npm/:_auth=...
+```
+
+or a token:
 
 ```bash
 npm login --auth-type=legacy --registry https://pkg.guimauve.digital/npm/

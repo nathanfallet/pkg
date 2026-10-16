@@ -56,7 +56,9 @@ fun Application.configureRouting() {
             mavenRoutes(get())
             pypiRoutes(get())
         }
-        authenticate("auth-bearer", optional = true) {
+        // npm sends the token of `_authToken` as bearer, or the `base64(username:password)` of
+        // `_auth` as basic: the latter needs no login and does not expire.
+        authenticate("auth-bearer", "auth-basic", optional = true) {
             npmRoutes(get())
         }
 
