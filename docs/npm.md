@@ -67,9 +67,15 @@ becoming `guimauve-fake-pkg-1.0.0.tgz`.
 
 ## Authentication
 
-Everything is `Authorization: Bearer <token>`, the token coming from the `_authToken` of the
-`.npmrc`. `npm login --auth-type=legacy` obtains one through
-`PUT /npm/-/user/org.couchdb.user:{username}`, which answers `{ "_id": …, "token": … }`.
+Two ways, both read from the `.npmrc` of the client:
+
+- `Authorization: Bearer <token>`, the token coming from the `_authToken`. `npm login --auth-type=legacy`
+  obtains one through `PUT /npm/-/user/org.couchdb.user:{username}`, which answers
+  `{ "_id": …, "token": … }`. It expires like any token of this instance.
+- `Authorization: Basic <base64(username:password)>`, which is what npm sends for an `_auth`. These
+  are the credentials maven and PyPI already use: no login, and nothing that expires, which is what
+  a CI or a provisioned workstation wants. The value is only base64: whoever reads the `.npmrc`
+  has the password, so keep it out of repositories and logs, and give a CI an account of its own.
 
 ## Not implemented
 

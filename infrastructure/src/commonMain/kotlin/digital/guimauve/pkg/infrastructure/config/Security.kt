@@ -22,7 +22,8 @@ fun Application.configureSecurity() {
             challenge { _, _ -> throw InvalidTokenException() }
         }
 
-        // The maven and PyPI clients, which send the credentials of the user
+        // The maven and PyPI clients, which send the credentials of the user, and the npm client
+        // configured with `_auth` in its `.npmrc`
         basic("auth-basic") {
             validate { credential ->
                 loginUseCase(LoginPayload(credential.name, credential.password))?.let {
