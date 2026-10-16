@@ -48,6 +48,7 @@ val domainModule = module {
     single<GetPackageVersionFileByNameUseCase> { GetPackageVersionFileByNameUseCaseImpl(get()) }
     single<GetLatestPackageVersionFileUseCase> { GetLatestPackageVersionFileUseCaseImpl(get()) }
     single<CreatePackageVersionFileUseCase> { CreatePackageVersionFileUseCaseImpl(get(), get()) }
+    single<ReplacePackageVersionFileUseCase> { ReplacePackageVersionFileUseCaseImpl(get(), get()) }
     single<DownloadFileUseCase> { DownloadFileUseCaseImpl(get()) }
 
     // Maven

@@ -12,6 +12,7 @@ import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.update
 import kotlin.uuid.Uuid
 
 class PackageVersionFilesDatabaseRepository(
@@ -68,5 +69,18 @@ class PackageVersionFilesDatabaseRepository(
             it[PackageVersionFiles.size] = size
         }
     }.resultedValues?.map(PackageVersionFiles::toPackageVersionFile)?.firstOrNull()
+
+    override suspend fun update(id: Uuid, contentType: String, size: Long): PackageVersionFile? =
+        transactionManager.suspendTransaction {
+            PackageVersionFiles.update({ PackageVersionFiles.id eq id }) {
+                it[PackageVersionFiles.contentType] = contentType
+                it[PackageVersionFiles.size] = size
+            }
+            PackageVersionFiles
+                .selectAll()
+                .where { PackageVersionFiles.id eq id }
+                .map(PackageVersionFiles::toPackageVersionFile)
+                .firstOrNull()
+        }
 
 }

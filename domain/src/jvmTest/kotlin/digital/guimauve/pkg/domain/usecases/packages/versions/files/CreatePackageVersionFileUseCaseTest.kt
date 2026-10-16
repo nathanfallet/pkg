@@ -23,7 +23,7 @@ import kotlin.uuid.Uuid
 /**
  * Whatever a file comes from, it reaches the storage as one stream and is recorded with the size
  * and type it was uploaded with. A name already taken in the version is refused before anything is
- * written, and a file the storage did not keep is not recorded.
+ * written, unless the same bytes are sent again, and a file the storage did not keep is not recorded.
  */
 class CreatePackageVersionFileUseCaseTest {
 
@@ -96,8 +96,50 @@ class CreatePackageVersionFileUseCaseTest {
         assertFailsWith<PackageVersionFileAlreadyExistsException> {
             useCase(payload, versionId, FileFromBytes(content, "application/java-archive"))
         }
+        // The sizes differ: the stored file is not even read.
+        coVerify(exactly = 0) { storage.downloadStream(any()) }
         coVerify(exactly = 0) { storage.uploadStream(any(), any()) }
         coVerify(exactly = 0) { repository.create(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `the same bytes sent again answer the file already there`() = runBlocking {
+        val existing = PackageVersionFile(
+            Uuid.random(), versionId, payload.name, "application/java-archive", content.size.toLong(), payload.path
+        )
+        coEvery { repository.getByName(payload.name, versionId) } returns existing
+        coEvery { storage.downloadStream(payload.path) } returns content.inputStream()
+
+        assertEquals(existing, useCase(payload, versionId, FileFromBytes(content, "application/java-archive")))
+        coVerify(exactly = 0) { storage.uploadStream(any(), any()) }
+        coVerify(exactly = 0) { repository.create(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `other bytes of the same size are refused`() = runBlocking {
+        val other = "jar CONTENT".toByteArray()
+        coEvery { repository.getByName(payload.name, versionId) } returns PackageVersionFile(
+            Uuid.random(), versionId, payload.name, "application/java-archive", content.size.toLong(), payload.path
+        )
+        coEvery { storage.downloadStream(payload.path) } returns content.inputStream()
+
+        assertFailsWith<PackageVersionFileAlreadyExistsException> {
+            useCase(payload, versionId, FileFromBytes(other, "application/java-archive"))
+        }
+        coVerify(exactly = 0) { storage.uploadStream(any(), any()) }
+    }
+
+    @Test
+    fun `a file recorded but missing from the storage is refused, not replaced`() = runBlocking {
+        coEvery { repository.getByName(payload.name, versionId) } returns PackageVersionFile(
+            Uuid.random(), versionId, payload.name, "application/java-archive", content.size.toLong(), payload.path
+        )
+        coEvery { storage.downloadStream(payload.path) } returns null
+
+        assertFailsWith<PackageVersionFileAlreadyExistsException> {
+            useCase(payload, versionId, FileFromBytes(content, "application/java-archive"))
+        }
+        coVerify(exactly = 0) { storage.uploadStream(any(), any()) }
     }
 
     @Test

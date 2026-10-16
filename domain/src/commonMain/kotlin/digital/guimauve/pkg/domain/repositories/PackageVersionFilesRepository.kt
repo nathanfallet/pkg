@@ -35,4 +35,11 @@ interface PackageVersionFilesRepository {
         size: Long,
     ): PackageVersionFile?
 
+    /**
+     * Records new content for a file whose storage object was just overwritten.
+     *
+     * @return The updated file, or null if there is no file with that identifier.
+     */
+    suspend fun update(id: Uuid, contentType: String, size: Long): PackageVersionFile?
+
 }

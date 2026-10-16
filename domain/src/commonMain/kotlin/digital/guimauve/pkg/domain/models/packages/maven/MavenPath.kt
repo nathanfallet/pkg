@@ -18,4 +18,15 @@ data class MavenPath(
     val packageName: String
         get() = "$groupId:$artifactId"
 
+    /**
+     * Whether this is the `maven-metadata.xml` of the module, or one of its checksums: the only files
+     * a client rewrites, each publication adding its version to the list.
+     */
+    val isModuleMetadata: Boolean
+        get() = version == null && (filename == METADATA || filename.startsWith("$METADATA."))
+
+    private companion object {
+        const val METADATA = "maven-metadata.xml"
+    }
+
 }

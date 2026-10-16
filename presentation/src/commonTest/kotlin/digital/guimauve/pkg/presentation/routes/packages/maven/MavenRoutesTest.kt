@@ -14,6 +14,7 @@ import digital.guimauve.pkg.domain.usecases.packages.versions.files.CreatePackag
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.DownloadFileUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetLatestPackageVersionFileUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetPackageVersionFileByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.files.ReplacePackageVersionFileUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper.configureTestApplication
@@ -64,6 +65,7 @@ class MavenRoutesTest {
         val getPackageVersionFileByNameUseCase = mockk<GetPackageVersionFileByNameUseCase>()
         val getLatestPackageVersionFileUseCase = mockk<GetLatestPackageVersionFileUseCase>()
         val createPackageVersionFileUseCase = mockk<CreatePackageVersionFileUseCase>()
+        val replacePackageVersionFileUseCase = mockk<ReplacePackageVersionFileUseCase>()
         val downloadFileUseCase = mockk<DownloadFileUseCase>()
         val getUserUseCase = mockk<GetUserUseCase>()
     }
@@ -84,6 +86,7 @@ class MavenRoutesTest {
                             getPackageVersionFileByNameUseCase = mocks.getPackageVersionFileByNameUseCase,
                             getLatestPackageVersionFileUseCase = mocks.getLatestPackageVersionFileUseCase,
                             createPackageVersionFileUseCase = mocks.createPackageVersionFileUseCase,
+                            replacePackageVersionFileUseCase = mocks.replacePackageVersionFileUseCase,
                             downloadFileUseCase = mocks.downloadFileUseCase,
                             getUserUseCase = mocks.getUserUseCase,
                         )
@@ -187,6 +190,75 @@ class MavenRoutesTest {
 
         assertEquals(HttpStatusCode.NoContent, response.status)
         coVerify { mocks.createPackageVersionFileUseCase(any(), RoutesTestHelper.TEST_VERSION_ID, any()) }
+    }
+
+    @Test
+    fun testPublishModuleMetadataReplacesIt() = testApplication {
+        val mocks = Mocks()
+        val metadata = file.copy(name = "maven-metadata.xml", path = "some/path/maven-metadata.xml")
+        coEvery { mocks.getUserUseCase(RoutesTestHelper.TEST_USER_ID) } returns RoutesTestHelper.testUser
+        coEvery {
+            mocks.getOrCreatePackageUseCase("com.example:library", PackageFormat.MAVEN, RoutesTestHelper.testUser)
+        } returns RoutesTestHelper.testPackage
+        coEvery {
+            mocks.getLatestPackageVersionFileUseCase("maven-metadata.xml", RoutesTestHelper.TEST_PACKAGE_ID)
+        } returns metadata
+        coEvery { mocks.replacePackageVersionFileUseCase(metadata, any()) } returns metadata
+        configureApp(mocks)
+
+        val response = client.put("/maven2/com/example/library/maven-metadata.xml") {
+            bearerAuth(RoutesTestHelper.generateTestToken())
+            setBody("<metadata/>".toByteArray())
+        }
+
+        assertEquals(HttpStatusCode.NoContent, response.status)
+        coVerify(exactly = 1) { mocks.replacePackageVersionFileUseCase(metadata, any()) }
+        coVerify(exactly = 0) { mocks.createPackageVersionFileUseCase(any(), any(), any()) }
+    }
+
+    @Test
+    fun testPublishFirstModuleMetadataGoesToTheLatestVersion() = testApplication {
+        val mocks = Mocks()
+        coEvery { mocks.getUserUseCase(RoutesTestHelper.TEST_USER_ID) } returns RoutesTestHelper.testUser
+        coEvery {
+            mocks.getOrCreatePackageUseCase("com.example:library", PackageFormat.MAVEN, RoutesTestHelper.testUser)
+        } returns RoutesTestHelper.testPackage
+        coEvery {
+            mocks.getLatestPackageVersionFileUseCase("maven-metadata.xml", RoutesTestHelper.TEST_PACKAGE_ID)
+        } returns null
+        coEvery { mocks.getLatestPackageVersionUseCase(RoutesTestHelper.TEST_PACKAGE_ID) } returns version
+        coEvery { mocks.createPackageVersionFileUseCase(any(), RoutesTestHelper.TEST_VERSION_ID, any()) } returns file
+        configureApp(mocks)
+
+        val response = client.put("/maven2/com/example/library/maven-metadata.xml") {
+            bearerAuth(RoutesTestHelper.generateTestToken())
+            setBody("<metadata/>".toByteArray())
+        }
+
+        assertEquals(HttpStatusCode.NoContent, response.status)
+        coVerify(exactly = 1) { mocks.createPackageVersionFileUseCase(any(), RoutesTestHelper.TEST_VERSION_ID, any()) }
+        coVerify(exactly = 0) { mocks.replacePackageVersionFileUseCase(any(), any()) }
+    }
+
+    @Test
+    fun testPublishVersionlessFileThatIsNotMetadataIsNeverReplaced() = testApplication {
+        val mocks = Mocks()
+        coEvery { mocks.getUserUseCase(RoutesTestHelper.TEST_USER_ID) } returns RoutesTestHelper.testUser
+        coEvery {
+            mocks.getOrCreatePackageUseCase("com.example:library", PackageFormat.MAVEN, RoutesTestHelper.testUser)
+        } returns RoutesTestHelper.testPackage
+        coEvery { mocks.getLatestPackageVersionUseCase(RoutesTestHelper.TEST_PACKAGE_ID) } returns version
+        coEvery { mocks.createPackageVersionFileUseCase(any(), RoutesTestHelper.TEST_VERSION_ID, any()) } returns file
+        configureApp(mocks)
+
+        val response = client.put("/maven2/com/example/library/library-1.0.0.jar") {
+            bearerAuth(RoutesTestHelper.generateTestToken())
+            setBody("jar!".toByteArray())
+        }
+
+        assertEquals(HttpStatusCode.NoContent, response.status)
+        coVerify(exactly = 0) { mocks.getLatestPackageVersionFileUseCase(any(), any()) }
+        coVerify(exactly = 0) { mocks.replacePackageVersionFileUseCase(any(), any()) }
     }
 
 }

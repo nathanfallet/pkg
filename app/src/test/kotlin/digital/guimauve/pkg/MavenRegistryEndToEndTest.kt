@@ -89,8 +89,12 @@ class MavenRegistryEndToEndTest {
         assertEquals("""{"error":"packages_private"}""", resolved.bodyAsText())
     }
 
+    /**
+     * A publication that failed half way is relaunched from its first file: sending again exactly
+     * what is already there must succeed, or the relaunch can never get past it.
+     */
     @Test
-    fun testPublishTwiceIsRefused() = withRegistry("publishTwice") {
+    fun testPublishTheSameBytesTwiceIsAccepted() = withRegistry("publishSameTwice") {
         client.put(artifact) {
             publisher()
             setBody(bytes)
@@ -101,8 +105,80 @@ class MavenRegistryEndToEndTest {
             setBody(bytes)
         }
 
+        assertEquals(HttpStatusCode.NoContent, again.status, again.bodyAsText())
+        assertContentEquals(bytes, client.get(artifact) { publisher() }.readRawBytes())
+    }
+
+    /** A published version is immutable: other bytes under the same name are refused. */
+    @Test
+    fun testPublishOtherBytesTwiceIsRefused() = withRegistry("publishOtherTwice") {
+        client.put(artifact) {
+            publisher()
+            setBody(bytes)
+        }
+
+        val again = client.put(artifact) {
+            publisher()
+            setBody("other bytes".toByteArray())
+        }
+
         assertEquals(HttpStatusCode.BadRequest, again.status)
         assertEquals("""{"error":"files_already_exists"}""", again.bodyAsText())
+        assertContentEquals(bytes, client.get(artifact) { publisher() }.readRawBytes())
+    }
+
+    /**
+     * Two publications of the same module overlapping, a release and a pre-release, as a CI does when
+     * a release is cut right after a merge. Each reads `maven-metadata.xml`, adds its version and
+     * writes it back: the module level metadata has no version in its path, and is rewritten on
+     * every publication. The second write must replace the first one, not be refused because the
+     * newest version already holds one.
+     */
+    @Test
+    fun testOverlappingPublicationsRewriteTheModuleMetadata() = withRegistry("overlappingPublications") {
+        val module = "/maven2/com/example/library"
+        val releaseJar = "$module/1.0.1/library-1.0.1.jar"
+        val metadata = "$module/maven-metadata.xml"
+        val stagingMetadata = "<metadata><versioning><latest>1.0.2-staging.1</latest></versioning></metadata>"
+        val releaseMetadata = "<metadata><versioning><latest>1.0.1</latest></versioning></metadata>"
+
+        client.put(releaseJar) { publisher(); setBody(bytes) }
+        client.put("$module/1.0.2-staging.1/library-1.0.2-staging.1.jar") { publisher(); setBody(bytes) }
+        val staging = client.put(metadata) { publisher(); setBody(stagingMetadata) }
+        val stagingSha1 = client.put("$metadata.sha1") { publisher(); setBody("staging-sha1") }
+        val release = client.put(metadata) { publisher(); setBody(releaseMetadata) }
+        val releaseSha1 = client.put("$metadata.sha1") { publisher(); setBody("release-sha1") }
+
+        assertEquals(HttpStatusCode.NoContent, staging.status, staging.bodyAsText())
+        assertEquals(HttpStatusCode.NoContent, stagingSha1.status, stagingSha1.bodyAsText())
+        assertEquals(HttpStatusCode.NoContent, release.status, release.bodyAsText())
+        assertEquals(HttpStatusCode.NoContent, releaseSha1.status, releaseSha1.bodyAsText())
+        assertEquals(releaseMetadata, client.get(metadata) { publisher() }.bodyAsText())
+        assertEquals("release-sha1", client.get("$metadata.sha1") { publisher() }.bodyAsText())
+
+        // The relaunch of a release that failed after its first file.
+        val relaunched = client.put(releaseJar) { publisher(); setBody(bytes) }
+        assertEquals(HttpStatusCode.NoContent, relaunched.status, relaunched.bodyAsText())
+    }
+
+    /**
+     * Only the module metadata is rewritable. A path that parses without a version but names a file
+     * of a version (here the jar of 1.0.0, one level up) must not reach that file.
+     */
+    @Test
+    fun testAVersionlessPathCannotRewriteAVersionFile() = withRegistry("versionlessRewrite") {
+        client.put(artifact) {
+            publisher()
+            setBody(bytes)
+        }
+
+        val rewritten = client.put("/maven2/com/example/library/library-1.0.0.jar") {
+            publisher()
+            setBody("other bytes".toByteArray())
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, rewritten.status, rewritten.bodyAsText())
+        assertContentEquals(bytes, client.get(artifact) { publisher() }.readRawBytes())
     }
 
     @Test
