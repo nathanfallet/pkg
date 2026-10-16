@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS PackageDistTags (package_id BINARY(16), tag VARCHAR(255), version_id BINARY(16) NOT NULL, CONSTRAINT pk_PackageDistTags PRIMARY KEY (package_id, tag));

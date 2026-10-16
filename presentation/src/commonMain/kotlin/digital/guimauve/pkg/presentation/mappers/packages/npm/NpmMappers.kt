@@ -4,6 +4,7 @@ import digital.guimauve.pkg.api.models.packages.npm.NpmPackument
 import digital.guimauve.pkg.domain.models.packages.Package
 import digital.guimauve.pkg.domain.models.packages.versions.PackageVersion
 import kotlinx.serialization.json.*
+import kotlin.uuid.Uuid
 
 /**
  * The name of the archive published for a version, as npm builds it: the scope becomes a prefix.
@@ -41,22 +42,33 @@ private fun JsonObject.withTarball(url: String): JsonObject = buildJsonObject {
 /**
  * Assembles the document npm reads to resolve a package.
  *
+ * @param distTags The tags of the package, each with the identifier of the version it points to. A
+ * tag pointing at a version not in [versions] is left out.
  * @param baseUrl Where this instance serves the npm registry from, without a trailing slash.
  */
-fun Package.toNpmPackument(versions: List<PackageVersion>, baseUrl: String): NpmPackument {
+fun Package.toNpmPackument(
+    versions: List<PackageVersion>,
+    distTags: Map<String, Uuid>,
+    baseUrl: String,
+): NpmPackument {
     val manifests = versions.mapNotNull { version ->
         val manifest = version.manifest() ?: return@mapNotNull null
         val url = "$baseUrl/${name}/-/${tarballName(name, version.version)}"
         version.version to manifest.withTarball(url)
     }.toMap()
 
-    // Nothing records the tags a publisher asked for, so the newest version is the latest one.
-    val latest = versions.maxByOrNull { it.publishedAt }?.version
+    val names = versions.associate { it.id to it.version }
+    val tags = distTags.mapNotNull { (tag, versionId) -> names[versionId]?.let { tag to it } }.toMap()
+
+    // A package published before tags were recorded has none: its most recently published version
+    // stays `latest`, as it always was. Once a package has tags, a missing `latest` is left missing
+    // — npm then picks the highest stable version itself, and never a pre-release.
+    val latest = if (distTags.isEmpty()) versions.maxByOrNull { it.publishedAt }?.version else null
 
     return NpmPackument(
         id = name,
         name = name,
-        distTags = latest?.let { mapOf("latest" to it) } ?: emptyMap(),
+        distTags = latest?.let { mapOf("latest" to it) } ?: tags,
         versions = manifests,
     )
 }

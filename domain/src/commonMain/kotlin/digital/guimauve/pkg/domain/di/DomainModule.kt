@@ -7,6 +7,10 @@ import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.packages.*
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCase
 import digital.guimauve.pkg.domain.usecases.packages.maven.ParseMavenPathUseCaseImpl
+import digital.guimauve.pkg.domain.usecases.packages.tags.ListPackageDistTagsUseCase
+import digital.guimauve.pkg.domain.usecases.packages.tags.ListPackageDistTagsUseCaseImpl
+import digital.guimauve.pkg.domain.usecases.packages.tags.SetPackageDistTagUseCase
+import digital.guimauve.pkg.domain.usecases.packages.tags.SetPackageDistTagUseCaseImpl
 import digital.guimauve.pkg.domain.usecases.packages.versions.*
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.*
 import digital.guimauve.pkg.domain.usecases.users.*
@@ -42,6 +46,10 @@ val domainModule = module {
     single<GetPackageVersionByNameUseCase> { GetPackageVersionByNameUseCaseImpl(get()) }
     single<GetOrCreatePackageVersionUseCase> { GetOrCreatePackageVersionUseCaseImpl(get()) }
     single<GetLatestPackageVersionUseCase> { GetLatestPackageVersionUseCaseImpl(get()) }
+
+    // Package dist-tags
+    single<ListPackageDistTagsUseCase> { ListPackageDistTagsUseCaseImpl(get()) }
+    single<SetPackageDistTagUseCase> { SetPackageDistTagUseCaseImpl(get()) }
 
     // Package version files
     single<ListPackageVersionFilesUseCase> { ListPackageVersionFilesUseCaseImpl(get()) }

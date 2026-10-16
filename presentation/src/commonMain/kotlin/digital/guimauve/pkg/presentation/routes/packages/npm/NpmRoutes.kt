@@ -17,6 +17,8 @@ import digital.guimauve.pkg.domain.services.TokenService
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetOrCreatePackageUseCase
 import digital.guimauve.pkg.domain.usecases.packages.GetPackageByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.tags.ListPackageDistTagsUseCase
+import digital.guimauve.pkg.domain.usecases.packages.tags.SetPackageDistTagUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.GetOrCreatePackageVersionUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.GetPackageVersionByNameUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.ListPackageVersionsUseCase
@@ -51,6 +53,8 @@ data class NpmRoutesDependencies(
     val getPackageVersionByNameUseCase: GetPackageVersionByNameUseCase,
     val getOrCreatePackageVersionUseCase: GetOrCreatePackageVersionUseCase,
     val listPackageVersionsUseCase: ListPackageVersionsUseCase,
+    val listPackageDistTagsUseCase: ListPackageDistTagsUseCase,
+    val setPackageDistTagUseCase: SetPackageDistTagUseCase,
     val createPackageVersionFileUseCase: CreatePackageVersionFileUseCase,
     val getLatestPackageVersionFileUseCase: GetLatestPackageVersionFileUseCase,
     val downloadFileUseCase: DownloadFileUseCase,
@@ -70,6 +74,9 @@ private fun ApplicationCall.npmBaseUrl(): String = with(request.origin) {
 }
 
 private val json = Json { ignoreUnknownKeys = true }
+
+/** The length of the column a dist-tag is stored in. */
+private const val MAX_TAG_LENGTH = 255
 
 /**
  * Configures the npm registry routes.
@@ -100,13 +107,19 @@ fun Route.npmRoutes(dependencies: NpmRoutesDependencies) = with(dependencies) {
         val user = call.requireUser(getUserUseCase)
         val target = parseNpmPath(call.parameters.getAll("path").orEmpty())
         val request = call.receive<NpmPublishRequest>()
+        // Checked before anything is written, so a refused publish leaves nothing behind. A tag
+        // names a version of this publish: npm never sends anything else.
+        if (request.distTags.any { (tag, version) ->
+                tag.isBlank() || tag.length > MAX_TAG_LENGTH || version !in request.versions
+            }
+        ) throw BadRequestException("Invalid dist-tag")
 
         val pkg = getOrCreatePackageUseCase(target.packageName, PackageFormat.NPM, user)
             ?: throw PackageNotFoundException()
 
         // A publish carries one version, but the shape allows several, and a client is free to
         // send them all.
-        request.versions.forEach { (versionName, manifest) ->
+        val published = request.versions.mapValues { (versionName, manifest) ->
             val version = getOrCreatePackageVersionUseCase(
                 versionName,
                 pkg.id,
@@ -124,6 +137,14 @@ fun Route.npmRoutes(dependencies: NpmRoutesDependencies) = with(dependencies) {
                 version.id,
                 FileFromBytes(bytes, attachment.contentType),
             ) ?: throw FileNotUploadedException()
+            version
+        }
+
+        // The tags the publish asked for: `latest`, or the one given to `npm publish --tag`. Only
+        // the versions of this publish are tagged; the other tags of the package stay where they are.
+        val tags = request.distTags.ifEmpty { published.keys.lastOrNull()?.let { mapOf("latest" to it) }.orEmpty() }
+        tags.forEach { (tag, versionName) ->
+            setPackageDistTagUseCase(pkg.id, tag, published.getValue(versionName).id)
         }
 
         call.respond(HttpStatusCode.Created, mapOf("ok" to true))
@@ -137,13 +158,17 @@ fun Route.npmRoutes(dependencies: NpmRoutesDependencies) = with(dependencies) {
 
         when (target) {
             is NpmPath.Packument -> call.respond(
-                pkg.toNpmPackument(listPackageVersionsUseCase(pkg.id), call.npmBaseUrl())
+                pkg.toNpmPackument(
+                    listPackageVersionsUseCase(pkg.id),
+                    listPackageDistTagsUseCase(pkg.id),
+                    call.npmBaseUrl(),
+                )
             )
 
             is NpmPath.Version -> {
                 val version = getPackageVersionByNameUseCase(target.version, pkg.id)
                     ?: throw PackageVersionNotFoundException()
-                val packument = pkg.toNpmPackument(listOf(version), call.npmBaseUrl())
+                val packument = pkg.toNpmPackument(listOf(version), emptyMap(), call.npmBaseUrl())
                 call.respond(packument.versions[version.version] ?: throw PackageVersionNotFoundException())
             }
 
