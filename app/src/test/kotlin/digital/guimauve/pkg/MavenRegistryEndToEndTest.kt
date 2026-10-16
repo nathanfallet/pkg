@@ -161,6 +161,26 @@ class MavenRegistryEndToEndTest {
         assertEquals(HttpStatusCode.NoContent, relaunched.status, relaunched.bodyAsText())
     }
 
+    /**
+     * Only the module metadata is rewritable. A path that parses without a version but names a file
+     * of a version (here the jar of 1.0.0, one level up) must not reach that file.
+     */
+    @Test
+    fun testAVersionlessPathCannotRewriteAVersionFile() = withRegistry("versionlessRewrite") {
+        client.put(artifact) {
+            publisher()
+            setBody(bytes)
+        }
+
+        val rewritten = client.put("/maven2/com/example/library/library-1.0.0.jar") {
+            publisher()
+            setBody("other bytes".toByteArray())
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, rewritten.status, rewritten.bodyAsText())
+        assertContentEquals(bytes, client.get(artifact) { publisher() }.readRawBytes())
+    }
+
     @Test
     fun testPublishAnonymouslyIsRefused() = withRegistry("publishAnonymously") {
         val published = client.put(artifact) { setBody(bytes) }

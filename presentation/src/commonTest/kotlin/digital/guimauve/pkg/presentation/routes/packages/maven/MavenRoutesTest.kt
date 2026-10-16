@@ -240,4 +240,25 @@ class MavenRoutesTest {
         coVerify(exactly = 0) { mocks.replacePackageVersionFileUseCase(any(), any()) }
     }
 
+    @Test
+    fun testPublishVersionlessFileThatIsNotMetadataIsNeverReplaced() = testApplication {
+        val mocks = Mocks()
+        coEvery { mocks.getUserUseCase(RoutesTestHelper.TEST_USER_ID) } returns RoutesTestHelper.testUser
+        coEvery {
+            mocks.getOrCreatePackageUseCase("com.example:library", PackageFormat.MAVEN, RoutesTestHelper.testUser)
+        } returns RoutesTestHelper.testPackage
+        coEvery { mocks.getLatestPackageVersionUseCase(RoutesTestHelper.TEST_PACKAGE_ID) } returns version
+        coEvery { mocks.createPackageVersionFileUseCase(any(), RoutesTestHelper.TEST_VERSION_ID, any()) } returns file
+        configureApp(mocks)
+
+        val response = client.put("/maven2/com/example/library/library-1.0.0.jar") {
+            bearerAuth(RoutesTestHelper.generateTestToken())
+            setBody("jar!".toByteArray())
+        }
+
+        assertEquals(HttpStatusCode.NoContent, response.status)
+        coVerify(exactly = 0) { mocks.getLatestPackageVersionFileUseCase(any(), any()) }
+        coVerify(exactly = 0) { mocks.replacePackageVersionFileUseCase(any(), any()) }
+    }
+
 }
