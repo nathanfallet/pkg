@@ -25,6 +25,7 @@ class MigrationsTest {
         Packages,
         PackageVersions,
         PackageVersionFiles,
+        PackageDistTags,
     )
 
     @Test

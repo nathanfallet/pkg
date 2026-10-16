@@ -59,6 +59,17 @@ is the name npm chose, which is not the name the archive is served under.
 A version manifest carries far more than a registry needs to understand, and npm keeps adding to it,
 so it is stored verbatim in `PackageVersions.metadata` and handed back untouched apart from that url.
 
+## Dist-tags
+
+The `dist-tags` of a publish name the tag it goes under: `{"latest": "1.0.0"}` for a plain
+`npm publish`, `{"beta": "1.1.0-beta.1"}` for `npm publish --tag beta`. That tag, and only that one,
+is pointed at the published version; `latest` does not move for a publish under another tag, so
+`npm install pkg` keeps installing the stable version while `npm install pkg@beta` gets the
+pre-release.
+
+npm cannot resolve a package without `latest`. A package that has none — published only under other
+tags, or before tags were recorded — gets its most recently published version as `latest`.
+
 ## Resolving
 
 `npm install` reads the packument, picks a version, then follows `dist.tarball`. The archive is
@@ -73,7 +84,7 @@ Everything is `Authorization: Bearer <token>`, the token coming from the `_authT
 
 ## Not implemented
 
-`dist-tags` beyond `latest`, which is derived from the most recently published version — publishing
-with `--tag beta` records the version but loses the tag. Also unpublish, deprecate, `GET /-/all` and
+Changing a tag without publishing (`npm dist-tag add` / `rm`, `PUT` and `DELETE` on
+`/-/package/{name}/dist-tags/{tag}`). Also unpublish, deprecate, `GET /-/all` and
 `GET /-/v1/search`, and the web login flow (`POST /-/v1/login` answers an empty object, which makes
 npm fall back to the legacy flow).

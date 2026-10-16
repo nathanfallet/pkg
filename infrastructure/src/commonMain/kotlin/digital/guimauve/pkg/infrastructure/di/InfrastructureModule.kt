@@ -80,4 +80,5 @@ val Application.infrastructureModule: Module
         single<PackagesRepository> { PackagesDatabaseRepository(get()) }
         single<PackageVersionsRepository> { PackageVersionsDatabaseRepository(get()) }
         single<PackageVersionFilesRepository> { PackageVersionFilesDatabaseRepository(get()) }
+        single<PackageDistTagsRepository> { PackageDistTagsDatabaseRepository(get()) }
     }
