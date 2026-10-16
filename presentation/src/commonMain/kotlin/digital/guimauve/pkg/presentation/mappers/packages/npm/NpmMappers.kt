@@ -60,15 +60,15 @@ fun Package.toNpmPackument(
     val names = versions.associate { it.id to it.version }
     val tags = distTags.mapNotNull { (tag, versionId) -> names[versionId]?.let { tag to it } }.toMap()
 
-    // npm cannot resolve a package without `latest`. A package published before tags were recorded,
-    // or only ever under another tag, gets its most recently published version, as npm's own
-    // registry does.
-    val latest = tags["latest"] ?: versions.maxByOrNull { it.publishedAt }?.version
+    // A package published before tags were recorded has none: its most recently published version
+    // stays `latest`, as it always was. Once a package has tags, a missing `latest` is left missing
+    // — npm then picks the highest stable version itself, and never a pre-release.
+    val latest = if (distTags.isEmpty()) versions.maxByOrNull { it.publishedAt }?.version else null
 
     return NpmPackument(
         id = name,
         name = name,
-        distTags = tags + (latest?.let { mapOf("latest" to it) } ?: emptyMap()),
+        distTags = latest?.let { mapOf("latest" to it) } ?: tags,
         versions = manifests,
     )
 }

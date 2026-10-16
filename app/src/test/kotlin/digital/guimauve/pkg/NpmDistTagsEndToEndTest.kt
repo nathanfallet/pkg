@@ -131,17 +131,26 @@ class NpmDistTagsEndToEndTest {
     }
 
     /**
-     * npm itself refuses to install a package without `latest`, so a package whose first
-     * publication carried another tag still gets one: its most recently published version, as
-     * before tags were recorded.
+     * A package published only under another tag has no `latest`: `npm install pkg` must not get a
+     * pre-release by default (npm then looks for the highest stable version, and finds none).
      */
     @Test
-    fun testAPackageWithoutLatestFallsBackToTheNewestVersion() = withRegistry("npmNoLatest") {
+    fun testAPackagePublishedOnlyUnderAnotherTagHasNoLatest() = withRegistry("npmNoLatest") {
         val token = token()
 
         publish("1.1.0-beta.1", mapOf("beta" to "1.1.0-beta.1")) { bearerAuth(token) }
 
-        assertEquals(mapOf("latest" to "1.1.0-beta.1", "beta" to "1.1.0-beta.1"), distTags(token))
+        assertEquals(mapOf("beta" to "1.1.0-beta.1"), distTags(token))
+    }
+
+    @Test
+    fun testATagNamingAnotherVersionIsRefused() = withRegistry("npmTagMismatch") {
+        val token = token()
+
+        val published = publish("1.0.0", mapOf("latest" to "9.9.9")) { bearerAuth(token) }
+
+        assertEquals(HttpStatusCode.BadRequest, published.status)
+        assertEquals(HttpStatusCode.NotFound, client.get("/npm/@guimauve%2ffake-pkg") { bearerAuth(token) }.status)
     }
 
 }

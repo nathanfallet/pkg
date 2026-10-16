@@ -263,6 +263,23 @@ class NpmRoutesTest {
         assertContains(response.bodyAsText(), """"dist-tags":{"latest":"1.0.0","beta":"1.1.0-beta.1"}""")
     }
 
+    /** Once a package has tags, a missing `latest` is not filled in with a newer pre-release. */
+    @Test
+    fun testPackumentWithTagsButNoLatestHasNoLatest() = testApplication {
+        val mocks = Mocks()
+        coEvery {
+            mocks.getPackageByNameUseCase("@guimauve/fake-pkg", PackageFormat.NPM, null)
+        } returns scopedPackage
+        coEvery { mocks.listPackageVersionsUseCase(RoutesTestHelper.TEST_PACKAGE_ID) } returns listOf(version)
+        coEvery { mocks.listPackageDistTagsUseCase(RoutesTestHelper.TEST_PACKAGE_ID) } returns
+                mapOf("beta" to RoutesTestHelper.TEST_VERSION_ID)
+        configureApp(mocks)
+
+        val response = client.get("/npm/@guimauve%2ffake-pkg")
+
+        assertContains(response.bodyAsText(), """"dist-tags":{"beta":"1.0.0"}""")
+    }
+
     /** `npm publish --tag beta` sends `{"beta": version}`: that tag is set, and `latest` is left alone. */
     @Test
     fun testPublishSetsTheRequestedTagOnly() = testApplication {

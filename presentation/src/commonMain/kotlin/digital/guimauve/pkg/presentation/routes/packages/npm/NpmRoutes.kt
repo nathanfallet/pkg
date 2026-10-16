@@ -107,10 +107,12 @@ fun Route.npmRoutes(dependencies: NpmRoutesDependencies) = with(dependencies) {
         val user = call.requireUser(getUserUseCase)
         val target = parseNpmPath(call.parameters.getAll("path").orEmpty())
         val request = call.receive<NpmPublishRequest>()
-        // Checked before anything is written, so a refused publish leaves nothing behind.
-        if (request.distTags.keys.any { it.isBlank() || it.length > MAX_TAG_LENGTH }) {
-            throw BadRequestException("Invalid dist-tag")
-        }
+        // Checked before anything is written, so a refused publish leaves nothing behind. A tag
+        // names a version of this publish: npm never sends anything else.
+        if (request.distTags.any { (tag, version) ->
+                tag.isBlank() || tag.length > MAX_TAG_LENGTH || version !in request.versions
+            }
+        ) throw BadRequestException("Invalid dist-tag")
 
         val pkg = getOrCreatePackageUseCase(target.packageName, PackageFormat.NPM, user)
             ?: throw PackageNotFoundException()
@@ -142,8 +144,7 @@ fun Route.npmRoutes(dependencies: NpmRoutesDependencies) = with(dependencies) {
         // the versions of this publish are tagged; the other tags of the package stay where they are.
         val tags = request.distTags.ifEmpty { published.keys.lastOrNull()?.let { mapOf("latest" to it) }.orEmpty() }
         tags.forEach { (tag, versionName) ->
-            val version = published[versionName] ?: return@forEach
-            setPackageDistTagUseCase(pkg.id, tag, version.id)
+            setPackageDistTagUseCase(pkg.id, tag, published.getValue(versionName).id)
         }
 
         call.respond(HttpStatusCode.Created, mapOf("ok" to true))

@@ -67,8 +67,11 @@ is pointed at the published version; `latest` does not move for a publish under 
 `npm install pkg` keeps installing the stable version while `npm install pkg@beta` gets the
 pre-release.
 
-npm cannot resolve a package without `latest`. A package that has none — published only under other
-tags, or before tags were recorded — gets its most recently published version as `latest`.
+A package published before tags were recorded has none, and keeps its most recently published
+version as `latest`. A package that has tags but no `latest` (published only under other tags) is
+served without one: npm then installs its highest stable version, and never a pre-release by default.
+
+A tag must name a version of the same publish; anything else is refused before anything is written.
 
 ## Resolving
 
