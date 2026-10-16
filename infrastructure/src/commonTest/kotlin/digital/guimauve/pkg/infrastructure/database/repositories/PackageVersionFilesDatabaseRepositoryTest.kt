@@ -122,4 +122,20 @@ class PackageVersionFilesDatabaseRepositoryTest {
         assertNull(repository.getLatestByName("missing.xml", packageId))
     }
 
+    @Test
+    fun `an update records the new type and size of a file and keeps the rest`() = runBlocking {
+        val version = version("1.0.0", Clock.System.now())
+        val created = file("maven-metadata.xml", version.id, size = 10)
+
+        val updated = repository.update(created.id, "application/xml", 25)
+
+        assertEquals(created.copy(contentType = "application/xml", size = 25), updated)
+        assertEquals(updated, repository.getByName("maven-metadata.xml", version.id))
+    }
+
+    @Test
+    fun `an update of an unknown file finds nothing`() = runBlocking {
+        assertNull(repository.update(Uuid.random(), "application/xml", 25))
+    }
+
 }

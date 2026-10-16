@@ -9,6 +9,10 @@ import kotlin.uuid.Uuid
 /**
  * Publishes a file for a version: uploads its content to the storage, then records it. A file the
  * storage did not keep is not recorded.
+ *
+ * A published file is immutable, but sending exactly the same bytes again is not a change: it answers
+ * the file already there, so that a client relaunching a publication that failed half way can get
+ * past the files it had already sent.
  */
 interface CreatePackageVersionFileUseCase {
 
@@ -19,8 +23,10 @@ interface CreatePackageVersionFileUseCase {
      * @param versionId The version the file belongs to.
      * @param source Where the content comes from.
      *
-     * @return The published file, or null if the storage did not keep it or it could not be recorded.
-     * @throws PackageVersionFileAlreadyExistsException if the version already has that file.
+     * @return The published file (the existing one when the content is identical), or null if the
+     * storage did not keep it or it could not be recorded.
+     * @throws PackageVersionFileAlreadyExistsException if the version already has that file with
+     * another content.
      */
     suspend operator fun invoke(
         payload: CreatePackageVersionFilePayload,

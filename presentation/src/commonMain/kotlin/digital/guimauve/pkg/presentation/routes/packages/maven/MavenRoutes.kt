@@ -17,6 +17,7 @@ import digital.guimauve.pkg.domain.usecases.packages.versions.files.CreatePackag
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.DownloadFileUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetLatestPackageVersionFileUseCase
 import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetPackageVersionFileByNameUseCase
+import digital.guimauve.pkg.domain.usecases.packages.versions.files.ReplacePackageVersionFileUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.presentation.extensions.requireUser
 import digital.guimauve.pkg.presentation.extensions.respondArtifact
@@ -39,6 +40,7 @@ data class MavenRoutesDependencies(
     val getPackageVersionFileByNameUseCase: GetPackageVersionFileByNameUseCase,
     val getLatestPackageVersionFileUseCase: GetLatestPackageVersionFileUseCase,
     val createPackageVersionFileUseCase: CreatePackageVersionFileUseCase,
+    val replacePackageVersionFileUseCase: ReplacePackageVersionFileUseCase,
     val downloadFileUseCase: DownloadFileUseCase,
     val getUserUseCase: GetUserUseCase,
 )
@@ -66,24 +68,33 @@ fun Route.mavenRoutes(dependencies: MavenRoutesDependencies) = with(dependencies
         val mavenPath = parseMavenPathUseCase(call.parameters.getAll("path").orEmpty())
         val pkg = getOrCreatePackageUseCase(mavenPath.packageName, PackageFormat.MAVEN, user)
             ?: throw PackageNotFoundException()
-        val version = mavenPath.version?.let { getOrCreatePackageVersionUseCase(it, pkg.id, user) }
-            ?: getLatestPackageVersionUseCase(pkg.id)
-            ?: throw PackageVersionNotFoundException()
 
         val contentType = call.request.contentType()
             .takeIf { it != ContentType.Any } ?: ContentType.Application.OctetStream
         // A chunked upload carries no length. Storing it as 0 would put an empty object in S3 and
         // record a 0 byte artifact, while still answering success.
         val contentLength = call.request.contentLength() ?: throw FileNotUploadedException()
-        createPackageVersionFileUseCase(
-            CreatePackageVersionFilePayload(mavenPath.filename, pkg, version),
-            version.id,
-            FileFromStream(
-                call.receiveStream(),
-                contentType.toString(),
-                contentLength
-            )
-        ) ?: throw FileNotUploadedException()
+        val source = FileFromStream(call.receiveStream(), contentType.toString(), contentLength)
+
+        // A path without a version is the `maven-metadata.xml` of the module, or one of its
+        // checksums. Every publication reads it, adds its version and writes it back, so it is
+        // replaced rather than refused, wherever it was first recorded. The files of a version stay
+        // immutable.
+        val existing = if (mavenPath.version == null) {
+            getLatestPackageVersionFileUseCase(mavenPath.filename, pkg.id)
+        } else null
+        if (existing != null) {
+            replacePackageVersionFileUseCase(existing, source) ?: throw FileNotUploadedException()
+        } else {
+            val version = mavenPath.version?.let { getOrCreatePackageVersionUseCase(it, pkg.id, user) }
+                ?: getLatestPackageVersionUseCase(pkg.id)
+                ?: throw PackageVersionNotFoundException()
+            createPackageVersionFileUseCase(
+                CreatePackageVersionFilePayload(mavenPath.filename, pkg, version),
+                version.id,
+                source,
+            ) ?: throw FileNotUploadedException()
+        }
         // 204, which is what the previous router answered and what maven clients expect here.
         call.respond(HttpStatusCode.NoContent)
     }
