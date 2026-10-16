@@ -50,6 +50,8 @@ maven, as `base64(username:password)`, which never expire:
 //pkg.guimauve.digital/npm/:_auth=...
 ```
 
+The value is only base64, not encrypted: keep that `.npmrc` private.
+
 or a token:
 
 ```bash

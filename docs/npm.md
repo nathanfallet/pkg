@@ -74,7 +74,8 @@ Two ways, both read from the `.npmrc` of the client:
   `{ "_id": …, "token": … }`. It expires like any token of this instance.
 - `Authorization: Basic <base64(username:password)>`, which is what npm sends for an `_auth`. These
   are the credentials maven and PyPI already use: no login, and nothing that expires, which is what
-  a CI or a provisioned workstation wants.
+  a CI or a provisioned workstation wants. The value is only base64: whoever reads the `.npmrc`
+  has the password, so keep it out of repositories and logs, and give a CI an account of its own.
 
 ## Not implemented
 

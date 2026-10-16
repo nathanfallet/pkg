@@ -140,6 +140,14 @@ class NpmRegistryEndToEndTest {
         assertEquals(HttpStatusCode.Unauthorized, published.status)
     }
 
+    /** Accepting basic next to bearer must not let a bad token through. */
+    @Test
+    fun testAnInvalidTokenIsRefused() = withRegistry("npmBearerWrong") {
+        val published = publish("1.0.0") { bearerAuth("not-a-token") }
+
+        assertEquals(HttpStatusCode.Unauthorized, published.status)
+    }
+
     @Test
     fun testInstallAnonymouslyIsRefused() = withRegistry("npmAnonymous") {
         publish("1.0.0") { basicAuth(email, password) }
