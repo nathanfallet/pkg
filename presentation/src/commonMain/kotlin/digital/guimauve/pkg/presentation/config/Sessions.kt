@@ -14,6 +14,7 @@ fun Application.configureSessions() {
     install(Sessions) {
         cookie<SessionPayload>("session", sessionStorage) {
             cookie.path = "/"
+            cookie.httpOnly = true
             cookie.secure = !isLocal
             cookie.extensions["SameSite"] = "Lax"
         }

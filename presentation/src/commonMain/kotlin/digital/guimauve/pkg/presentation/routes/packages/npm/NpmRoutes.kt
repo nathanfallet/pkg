@@ -93,12 +93,13 @@ fun Route.npmRoutes(dependencies: NpmRoutesDependencies) = with(dependencies) {
     put("/npm/-/user/{userId}") {
         val credentials = call.receive<NpmLoginRequest>()
         val user = loginUseCase(LoginPayload(credentials.name, credentials.password))
+            ?.takeUnless { it.disabled || it.passwordChangeRequired }
             ?: throw InvalidCredentialsException()
         call.respond(
             HttpStatusCode.Created,
             NpmLoginResponse(
                 id = "org.couchdb.user:${credentials.name}",
-                token = tokenService.generateToken(user.id, TokenType.ACCESS),
+                token = tokenService.generateToken(user.id, TokenType.ACCESS, user.credentialVersion),
             )
         )
     }

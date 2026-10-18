@@ -13,10 +13,11 @@ interface TokenService {
      *
      * @param userId The ID of the user the token authenticates.
      * @param type The kind of token, which decides how long it stays valid.
+     * @param expectedCredentialVersion The version checked at login, to reject a concurrent reset.
      *
      * @return The token.
      */
-    fun generateToken(userId: Uuid, type: TokenType): String
+    fun generateToken(userId: Uuid, type: TokenType, expectedCredentialVersion: Int? = null): String
 
     /**
      * Reads the user a token authenticates.

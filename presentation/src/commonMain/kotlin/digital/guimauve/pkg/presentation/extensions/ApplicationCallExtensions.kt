@@ -6,6 +6,7 @@ import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationForbidde
 import digital.guimauve.pkg.domain.exceptions.organizations.OrganizationNotFoundException
 import digital.guimauve.pkg.domain.models.organizations.Organization
 import digital.guimauve.pkg.domain.models.users.User
+import digital.guimauve.pkg.domain.services.AccountFailure
 import digital.guimauve.pkg.domain.usecases.organizations.GetOrganizationUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.presentation.models.SessionPayload
@@ -99,13 +100,20 @@ private val userKey = AttributeKey<UserForCall>("user")
  *
  * @return The [User] if the call is authenticated, otherwise null.
  */
-suspend fun ApplicationCall.userOrNull(getUserUseCase: GetUserUseCase): User? =
-    // Note: we cannot use `computeIfAbsent` because it does not support suspending functions
-    attributes.getOrNull(userKey)?.user ?: run {
-        val computed = UserForCall(userIdOrNull()?.let { getUserUseCase(it) })
-        attributes.put(userKey, computed)
-        computed.user
+suspend fun ApplicationCall.userOrNull(
+    getUserUseCase: GetUserUseCase,
+    allowTemporaryPassword: Boolean = false,
+): User? {
+    // Cache only the identity, not whether a particular caller allows a temporary password.
+    val identity = attributes.getOrNull(userKey) ?: run {
+        val user = userIdOrNull()?.let { getUserUseCase(it) }?.takeUnless { user ->
+            val usesSession = principal<JWTPrincipal>() == null && principal<UserIdPrincipal>() == null
+            user.disabled || (usesSession && session()?.credentialVersion != user.credentialVersion)
+        }
+        UserForCall(user).also { attributes.put(userKey, it) }
     }
+    return identity.user?.takeUnless { it.passwordChangeRequired && !allowTemporaryPassword }
+}
 
 /**
  * Retrieves the user of the application call.
@@ -116,7 +124,9 @@ suspend fun ApplicationCall.userOrNull(getUserUseCase: GetUserUseCase): User? =
  * @throws InvalidCredentialsException if the call is not authenticated.
  */
 suspend fun ApplicationCall.requireUser(getUserUseCase: GetUserUseCase): User =
-    userOrNull(getUserUseCase) ?: throw InvalidCredentialsException()
+    (userOrNull(getUserUseCase, allowTemporaryPassword = true) ?: throw InvalidCredentialsException()).also {
+        if (it.passwordChangeRequired) throw AccountFailure(403, "auth_password_change_required")
+    }
 
 private data class OrganizationForCall(
     val organization: Organization?,

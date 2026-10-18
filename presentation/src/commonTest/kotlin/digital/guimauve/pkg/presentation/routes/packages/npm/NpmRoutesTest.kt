@@ -196,7 +196,7 @@ class NpmRoutesTest {
             mocks.loginUseCase(LoginPayload("someone@guimauve.digital", "hunter2"))
         } returns RoutesTestHelper.testUser
         every {
-            mocks.tokenService.generateToken(RoutesTestHelper.TEST_USER_ID, TokenType.ACCESS)
+            mocks.tokenService.generateToken(RoutesTestHelper.TEST_USER_ID, TokenType.ACCESS, 0)
         } returns "a-token"
         configureApp(mocks)
 

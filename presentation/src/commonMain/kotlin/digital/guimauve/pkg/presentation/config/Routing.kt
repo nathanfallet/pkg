@@ -1,5 +1,6 @@
 package digital.guimauve.pkg.presentation.config
 
+import digital.guimauve.pkg.presentation.routes.auth.accountRoutes
 import digital.guimauve.pkg.presentation.routes.auth.authRoutes
 import digital.guimauve.pkg.presentation.routes.dashboard.dashboardRoutes
 import digital.guimauve.pkg.presentation.routes.health.healthRoutes
@@ -48,6 +49,7 @@ fun Application.configureRouting() {
 
             // Dashboard
             authRoutes(get())
+            accountRoutes(get(), get())
             dashboardRoutes(get())
         }
 

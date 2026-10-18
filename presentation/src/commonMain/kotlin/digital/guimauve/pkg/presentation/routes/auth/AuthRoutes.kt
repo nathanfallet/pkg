@@ -1,7 +1,6 @@
 package digital.guimauve.pkg.presentation.routes.auth
 
 import digital.guimauve.pkg.domain.models.auth.LoginPayload
-import digital.guimauve.pkg.domain.models.users.User
 import digital.guimauve.pkg.domain.usecases.auth.LoginUseCase
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.presentation.extensions.clearSession
@@ -26,7 +25,7 @@ data class AuthRoutesDependencies(
     val getUserUseCase: GetUserUseCase,
 )
 
-private val EMAIL_REGEX = Regex(User.EMAIL_REGEX)
+private val LOGIN_REGEX = Regex("[a-zA-Z0-9._%+-][a-zA-Z0-9._%@+-]{0,254}")
 
 /**
  * Where to send the visitor once signed in or out. Only same-site paths are honoured, so that a
@@ -56,8 +55,8 @@ fun Route.authRoutes(dependencies: AuthRoutesDependencies) = with(dependencies) 
             email = parameters["email"].orEmpty(),
             password = parameters["password"].orEmpty(),
         )
-        // Tell a malformed address apart from a wrong one, rather than sending both to the database.
-        if (!EMAIL_REGEX.matches(payload.email)) {
+        // Both new usernames and historical email identifiers are accepted.
+        if (!LOGIN_REGEX.matches(payload.email)) {
             val layout = LayoutView("auth_login_title", user = null)
             return@post call.respondView(
                 "public/auth/login.ftl",
@@ -76,8 +75,8 @@ fun Route.authRoutes(dependencies: AuthRoutesDependencies) = with(dependencies) 
         // Drop whatever session the visitor arrived with, so a planted id cannot survive the login
         // and end up pointing at the account that just signed in.
         call.clearSession()
-        call.setSession(SessionPayload(user.id))
-        call.respondRedirect(call.redirectTarget())
+        call.setSession(SessionPayload(user.id, user.credentialVersion))
+        call.respondRedirect(if (user.passwordChangeRequired) "/auth/password" else call.redirectTarget())
     }
     get("/auth/logout") {
         call.clearSession()

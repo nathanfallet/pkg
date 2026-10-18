@@ -23,6 +23,9 @@ data class UserView(
     val email: String,
     val organizationId: String,
     val url: String,
+    val admin: Boolean = false,
+    val disabled: Boolean = false,
+    val passwordChangeRequired: Boolean = false,
 )
 
 data class PackageView(
@@ -120,3 +123,15 @@ data class PyPiPackagePageView(
     val name: String,
     val files: List<PyPiLinkView>,
 )
+
+
+data class PasswordPageView(val layout: LayoutView, val csrf: String)
+data class AdministrationPageView(
+    val layout: LayoutView,
+    val csrf: String,
+    val users: List<UserView>,
+    val organizations: List<OrganizationView>,
+)
+class TemporaryPasswordPageView(val layout: LayoutView, val username: String, val password: String) {
+    override fun toString() = "TemporaryPasswordPageView([REDACTED])"
+}

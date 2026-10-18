@@ -100,7 +100,7 @@ class AuthRoutesTest {
         val response = client.submitForm(
             url = "/auth/login",
             formParameters = parameters {
-                append("email", "not-an-address")
+                append("email", "invalid username!")
                 append("password", "hunter2")
             }
         )

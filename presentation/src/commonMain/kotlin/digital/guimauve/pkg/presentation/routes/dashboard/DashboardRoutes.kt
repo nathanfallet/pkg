@@ -64,8 +64,12 @@ private data class DashboardContext(
 private suspend fun RoutingContext.dashboardContext(
     dependencies: DashboardRoutesDependencies,
 ): DashboardContext? = with(dependencies) {
-    val user = call.userOrNull(getUserUseCase) ?: run {
+    val user = call.userOrNull(getUserUseCase, allowTemporaryPassword = true) ?: run {
         call.respondRedirect("/auth/login?redirect=${call.request.uri}")
+        return null
+    }
+    if (user.passwordChangeRequired) {
+        call.respondRedirect("/auth/password")
         return null
     }
     val organization = getOrganizationUseCase(user.organizationId) ?: throw OrganizationNotFoundException()

@@ -25,4 +25,7 @@ fun User.toUserView() = UserView(
     email = email,
     organizationId = organizationId.toString(),
     url = "/users/$id",
+    admin = admin,
+    disabled = disabled,
+    passwordChangeRequired = passwordChangeRequired,
 )
