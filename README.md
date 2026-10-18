@@ -117,3 +117,42 @@ helm install pkg path-to-repo/helm/pkg -f values.yaml
 ```
 
 And you can access it with the chosen domain!
+
+### Accounts and first login
+
+There is no public registration or email delivery. After migrating an empty user database, PKG
+creates the `Default` organization and the `admin` account. Its random temporary password is
+printed **once**, in the bootstrap log, after the creation transaction commits. Keep this log
+private. Concurrent starts create only one account; later starts neither print nor reset its password.
+
+Sign in at `/auth/login` with `admin` and that password. PKG requires a different password of at
+least 14 characters (at most 72 UTF-8 bytes, the BCrypt limit) before dashboard or registry access.
+
+Administrators use **Manage users** (`/admin/users`) to create accounts in an organization, grant
+or remove administrator access, disable/re-enable users and reset passwords. Administrators manage
+users across the instance; package access still follows each account's organization. The last active
+administrator cannot be disabled or demoted.
+
+Creation and password reset show a random temporary password only in that response. Copy it and
+share it with the person; it cannot be retrieved later. The person must change it before using PKG.
+Password changes and resets revoke existing sessions and registry/API tokens. Disabling a user
+revokes access immediately; enabling them again does not restore old sessions or tokens.
+
+### Upgrading an existing instance
+
+Existing users retain their identifiers (including email addresses), passwords, organizations and
+access. They remain ordinary users, without a forced password change. Existing sessions and tokens
+continue to work. No bootstrap account is created when **any user already exists**.
+
+After the migration, promote your chosen existing account manually in your own database. On MySQL,
+first confirm the identifier belongs to exactly the account you intend to promote, then run:
+
+```sql
+SELECT HEX(id), email, admin FROM Users WHERE email = 'your-existing-login';
+-- Substitute the exact HEX(id) returned above:
+UPDATE Users SET admin = TRUE WHERE id = UNHEX('your-user-id-as-32-hex-digits');
+```
+
+The dashboard reads the role on each request; reload it to see **Manage users**. This does not
+change that account's password or invalidate its current sessions. The historical `email` API/DB
+field now also stores usernames for new accounts; no mailbox is required.

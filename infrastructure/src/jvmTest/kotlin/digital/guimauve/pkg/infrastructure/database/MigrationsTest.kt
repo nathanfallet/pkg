@@ -1,7 +1,6 @@
 package digital.guimauve.pkg.infrastructure.database
 
 import digital.guimauve.pkg.infrastructure.database.tables.*
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 import kotlin.test.Test
@@ -26,6 +25,7 @@ class MigrationsTest {
         PackageVersions,
         PackageVersionFiles,
         PackageDistTags,
+        AdministrationLock,
     )
 
     @Test
@@ -40,7 +40,11 @@ class MigrationsTest {
     fun aDatabaseFromBeforeFlywayIsBaselinedNotRecreated() {
         // What every database created by `SchemaUtils.create` looks like on its first boot on Flyway.
         val factory = mysql("legacy")
-        transaction(factory.getDatabase()) { SchemaUtils.create(*tables) }
+        transaction(factory.getDatabase()) {
+            val baseline = checkNotNull(javaClass.classLoader.getResource("db/migration/V1__baseline.sql")).readText()
+            baseline.lineSequence().filterNot { it.trimStart().startsWith("--") }.joinToString("\n")
+                .split(';').filter { it.isNotBlank() }.forEach { exec(it) }
+        }
 
         factory.migrate()
 

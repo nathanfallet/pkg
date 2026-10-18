@@ -10,6 +10,11 @@ object Users : UuidTable() {
     val email = varchar("email", 255).index()
     val password = varchar("password", 255)
 
+    val admin = bool("admin").default(false)
+    val disabled = bool("disabled").default(false)
+    val passwordChangeRequired = bool("password_change_required").default(false)
+    val credentialVersion = integer("credential_version").default(0)
+
     fun toUser(
         row: ResultRow,
         includePassword: Boolean = false,
@@ -18,6 +23,10 @@ object Users : UuidTable() {
         row[organizationId],
         row[email],
         row[password].takeIf { includePassword },
+        row[admin],
+        row[disabled],
+        row[passwordChangeRequired],
+        row[credentialVersion],
     )
 
 }

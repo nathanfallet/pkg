@@ -20,12 +20,13 @@ class LoginUseCaseImpl(
     private val dummyHash by lazy { passwordEncoderService.encode("no account will ever match this") }
 
     override suspend fun invoke(input: LoginPayload): User? {
+        if (input.password.encodeToByteArray().size > 72) return null
         val user = getUserForEmailUseCase(input.email, true)
         val hash = user?.password ?: run {
             passwordEncoderService.matches(input.password, dummyHash)
             return null
         }
-        return user.takeIf { passwordEncoderService.matches(input.password, hash) }
+        return user.takeIf { passwordEncoderService.matches(input.password, hash) && !it.disabled }
     }
 
 }

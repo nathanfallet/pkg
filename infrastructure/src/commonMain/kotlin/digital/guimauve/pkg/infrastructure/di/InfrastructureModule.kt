@@ -57,6 +57,8 @@ val Application.infrastructureModule: Module
         single<HealthService> { DatabaseHealthService(get()) }
 
         // Services
+        single { DatabaseUserAdministrationService(get(), get()) }
+        single<UserAdministrationService> { get<DatabaseUserAdministrationService>() }
         single<PasswordEncoderService> { BCryptPasswordEncoderService() }
         single<TranslateService> { PropertiesTranslateService() }
         // The concrete type is bound too: the Ktor `jwt` provider needs its verifier.
@@ -64,7 +66,8 @@ val Application.infrastructureModule: Module
             JwtTokenService(
                 environment.config.property("jwt.secret").getString(),
                 environment.config.property("jwt.issuer").getString(),
-                environment.config.property("jwt.audience").getString()
+                environment.config.property("jwt.audience").getString(),
+                credentialVersion = get<DatabaseUserAdministrationService>()::credentialVersion,
             )
         }
         single<TokenService> { get<JwtTokenService>() }

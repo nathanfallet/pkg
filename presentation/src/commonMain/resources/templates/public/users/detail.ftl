@@ -20,7 +20,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <dl class="row">
-                        <dt class="col-sm-4">Email</dt>
+                        <dt class="col-sm-4">Username</dt>
                         <dd class="col-sm-8">${view.item.email}</dd>
 
                         <dt class="col-sm-4">User ID</dt>

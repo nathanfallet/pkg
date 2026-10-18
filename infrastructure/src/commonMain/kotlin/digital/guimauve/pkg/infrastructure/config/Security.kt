@@ -17,7 +17,9 @@ fun Application.configureSecurity() {
         // The API clients, which carry a token
         jwt("api-jwt") {
             verifier(tokenService.verifier)
-            validate { JWTPrincipal(it.payload) }
+            validate { credential ->
+                JWTPrincipal(credential.payload).takeIf { tokenService.isCurrent(credential.payload) }
+            }
             // Let the status pages own the response shape, rather than writing it a second time.
             challenge { _, _ -> throw InvalidTokenException() }
         }
@@ -26,7 +28,8 @@ fun Application.configureSecurity() {
         // configured with `_auth` in its `.npmrc`
         basic("auth-basic") {
             validate { credential ->
-                loginUseCase(LoginPayload(credential.name, credential.password))?.let {
+                loginUseCase(LoginPayload(credential.name, credential.password))
+                    ?.takeUnless { it.disabled || it.passwordChangeRequired }?.let {
                     UserIdPrincipal(it.id.toString())
                 }
             }

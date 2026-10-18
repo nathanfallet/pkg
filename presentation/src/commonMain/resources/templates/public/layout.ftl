@@ -26,6 +26,8 @@
                     <li class="nav-item"><a class="nav-link" href="/users"><@t key="nav_users" /></a></li>
                 </ul>
                 <#if layout.user??>
+                    <#if layout.user.admin><a class="nav-link text-light me-3" href="/admin/users">Manage users</a></#if>
+                    <a class="nav-link text-light me-3" href="/auth/password">Change password</a>
                     <span class="navbar-text">
                         ${layout.user.email} |
                         <a href="/auth/logout" class="text-light"><@t key="auth_field_logout" /></a>

@@ -15,6 +15,7 @@ import digital.guimauve.pkg.domain.exceptions.packages.versions.files.PackageVer
 import digital.guimauve.pkg.domain.exceptions.storage.StorageFileNotFoundException
 import digital.guimauve.pkg.domain.exceptions.users.UserNotFoundException
 import digital.guimauve.pkg.domain.services.TranslateService
+import digital.guimauve.pkg.domain.services.AccountFailure
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.presentation.extensions.language
 import digital.guimauve.pkg.presentation.extensions.respondView
@@ -62,6 +63,9 @@ fun Application.configureErrorHandling() {
         respondError(status, key, translateService, getUserUseCase)
 
     install(StatusPages) {
+        exception<AccountFailure> { call, cause ->
+            call.fail(HttpStatusCode.fromValue(cause.status), cause.key)
+        }
         // Auth
         exception<InvalidCredentialsException> { call, _ ->
             call.fail(HttpStatusCode.Unauthorized, "auth_invalid_credentials")
