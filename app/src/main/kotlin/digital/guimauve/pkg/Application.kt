@@ -19,6 +19,7 @@ fun Application.module() {
         modules(domainModule, presentationModule, infrastructureModule)
     }
     // First, so every call is traced and gets its request id before anything else runs.
+    configureForwardedHeaders()
     configureTelemetry()
     configureMonitoring()
     configureDatabase()
