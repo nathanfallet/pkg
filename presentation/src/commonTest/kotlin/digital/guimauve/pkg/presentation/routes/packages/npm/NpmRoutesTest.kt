@@ -20,6 +20,7 @@ import digital.guimauve.pkg.domain.usecases.packages.versions.files.GetLatestPac
 import digital.guimauve.pkg.domain.usecases.users.GetUserUseCase
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper
 import digital.guimauve.pkg.presentation.routes.RoutesTestHelper.configureTestApplication
+import digital.guimauve.pkg.presentation.config.configureForwardedHeaders
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -109,6 +110,33 @@ class NpmRoutesTest {
                 }
             }
         }
+    }
+
+    /**
+     * Behind the TLS-terminating proxy the service sees plain http: the tarball urls must still be the https ones the
+     * client used, read from `X-Forwarded-Proto` and `X-Forwarded-Host`, or pnpm writes `http://` in lockfiles.
+     */
+    @Test
+    fun testPackumentTarballFollowsTheForwardedScheme() = testApplication {
+        val mocks = Mocks()
+        coEvery {
+            mocks.getPackageByNameUseCase("@guimauve/fake-pkg", PackageFormat.NPM, null)
+        } returns scopedPackage
+        coEvery { mocks.listPackageVersionsUseCase(RoutesTestHelper.TEST_PACKAGE_ID) } returns listOf(version)
+        coEvery { mocks.listPackageDistTagsUseCase(RoutesTestHelper.TEST_PACKAGE_ID) } returns emptyMap()
+        configureApp(mocks)
+        application { configureForwardedHeaders() }
+
+        val response = client.get("/npm/@guimauve%2ffake-pkg") {
+            header("X-Forwarded-Proto", "https")
+            header("X-Forwarded-Host", "pkg.example.com")
+            header("X-Forwarded-Port", "443")
+        }
+
+        assertContains(
+            response.bodyAsText(),
+            "https://pkg.example.com/npm/@guimauve/fake-pkg/-/guimauve-fake-pkg-1.0.0.tgz"
+        )
     }
 
     /**

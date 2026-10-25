@@ -62,6 +62,7 @@ kotlin {
                 api(libs.ktor.server.status.pages)
                 api(libs.ktor.server.freemarker)
                 api(libs.ktor.server.cors)
+                api(libs.ktor.server.forwarded.header)
                 api(libs.ktor.server.auto.head.response)
                 api(libs.ktor.server.call.logging)
                 api(libs.ktor.server.call.id)
